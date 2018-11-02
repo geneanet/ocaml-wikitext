@@ -1,0 +1,16 @@
+opam-version: "2.0"
+maintainer: ""
+authors: ""
+homepage: ""
+bug-reports: ""
+dev-repo: ""
+license: ""
+synopsis: "Wikitext parser"
+build: [
+  [ make "build" ] {ocaml-native}
+]
+install: [ make "install" ]
+remove: ["ocamlfind" "remove" "jingoo"]
+depends: [
+  "ppx_deriving"
+]

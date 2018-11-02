@@ -1,0 +1,10 @@
+(ocamlyacc (modules wktxt_parser) )
+
+(ocamllex (modules wktxt_lexer) )
+
+(executable
+  (name wktxt_cmdline)
+  (public_name wktxt_cmdline)
+  (libraries ppx_deriving.show)
+  (preprocess (pps ppx_deriving.show))
+)

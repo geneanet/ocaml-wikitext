@@ -1,0 +1,51 @@
+= Heading 1 =
+== Heading 2 ==
+=== Heading 3 ===
+==== Heading 4 ====
+===== Heading 5 =====
+====== Heading 6 ======
+
+----
+
+A single newline here
+has no effect on the layout.
+
+But an empty line starts a new paragraph,
+or ends a list or an indented part.
+
+* Item1
+* Item2
+* Item3
+* Item4
+** Sub-item 4 a
+*** Sub-item 4 a 1.
+**** Sub-item 4 a 1. i
+**** Sub-item 4 a 1. ii
+** Sub-item 4 b
+* Item5
+
+# Item1
+# Item2
+# Item3
+# Item4
+## Sub-item 1
+### Sub-sub-item
+#### Sub-sub-sub-item
+## Sub-item 2
+# Item5
+
+; Term : Definition1
+
+; Term
+: Definition1
+: Definition2
+: Definition3
+: Definition4
+
+To ''italicize text'', put two consecutive apostrophes on each side of it.
+
+Three apostrophes each side will '''bold the text'''.
+
+Five consecutive apostrophes on each side (two for italics plus three for bold) produces '''''bold italics'''''.
+
+'''''Italic and bold formatting''''' works correctly only within a single line.
