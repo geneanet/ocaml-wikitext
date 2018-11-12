@@ -17,23 +17,20 @@
 
 }
 
-rule main = parse
+let alpha = ['a'-'z' 'A'-'Z']
+let white = [ ' ' '\t']
 
+rule main = parse
   | '='+ as s {
       token_or_str (s, HEADER (String.length s))
     }
-
   | '\n' {
       print_endline __LOC__ ;
       Lexing.new_line lexbuf ;
       newline := true ;
       main lexbuf
     }
-
-  | _ as c {
-      CHAR c
-  }
-
-  | eof {
-      EOF
-    }
+  | alpha+ as s { STRING s }
+  | white+ { WHITE }
+  | eof { EOF }
+  | _ as c { CHAR c }

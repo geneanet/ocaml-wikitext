@@ -5,7 +5,7 @@
 %token<int> HEADER
 %token<string> STRING
 %token<char> CHAR
-%token EOF
+%token EOF WHITE HEADER1 HEADER2 HEADER3 HEADER4 HEADER5 HEADER6
 
 %start document
 %type <Wktxt_type.document> document
@@ -14,16 +14,12 @@
 
 document:
 | EOF { [] }
-| fragments EOF { $1 }
-;
-
-fragments:
-| fragment { [$1] }
-| fragment fragments { $1 :: $2 }
+| fragment+ EOF { $1 }
 ;
 
 fragment:
-| HEADER fragments { Header ($1, $2) }
-| STRING { String $1 }
-| CHAR { Char $1 }
+| h = HEADER f = fragment+ { Header (h, f) }
+| s = STRING { String s }
+| c = CHAR { Char c }
+| WHITE { White }
 ;

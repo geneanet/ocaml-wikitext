@@ -1,4 +1,4 @@
-(ocamlyacc (modules wktxt_parser) )
+(menhir (modules wktxt_parser) )
 
 (ocamllex (modules wktxt_lexer) )
 

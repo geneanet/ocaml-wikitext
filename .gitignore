@@ -1,0 +1,5 @@
+_build
+.merlin
+dune-project
+*.swp
+Session.vim
