@@ -19,18 +19,17 @@ document:
 ;
 
 block:
-  | h1 = HEADER i = inline+ HEADER { 
+  | h1 = HEADER i = inline+ HEADER EMPTYLINE* { 
       Header (h1, i)
     }
-  | l = LIST i = inline+ {
+  | l = LIST i = inline+ EMPTYLINE* {
       List (l, i)
   }
-  | l = NUMLIST i = inline+ {
+  | l = NUMLIST i = inline+ EMPTYLINE* {
       Num_list (l, i)
   }
-  | HRULE { Hrule }
-  | EMPTYLINE { Emptyline } (* do not match alone, use it in others*)
-  | i = inline+ { Paragraph i }
+  | HRULE EMPTYLINE* { Hrule }
+  | i = inline+ EMPTYLINE* { Paragraph i }
 ;
 
 (* inlines *)
