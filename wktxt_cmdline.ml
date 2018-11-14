@@ -11,4 +11,4 @@ let () =
     let col = curr.Lexing.pos_cnum - curr.Lexing.pos_bol in
     let tok = Lexing.lexeme lexbuf in
     failwith
-      (Printf.sprintf "Error line %d, col %d, token %s" line col tok)
+      (Printf.sprintf "Error line %d, col %d, token [%s]" line col tok)
