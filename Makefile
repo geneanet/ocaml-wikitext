@@ -5,7 +5,8 @@ build:
 	dune build wktxt_cmdline.exe
 
 test: build
-	_build/default/wktxt_cmdline.exe < test/test.wikitext | head -n 100
+	echo "\ntest wikitext :" ; _build/default/wktxt_cmdline.exe < test/test.wikitext; echo "\ntest bold and italic :\n" ; _build/default/wktxt_cmdline.exe < test/test.boldital | head -n 100;
+
 
 clean:
 	dune clean
