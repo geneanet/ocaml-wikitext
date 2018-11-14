@@ -17,7 +17,9 @@
     end
 }
 
-let alpha = ['a'-'z' 'A'-'Z']
+let bold = "'''"
+let italic = "''"
+let alphanum = ['a'-'z' 'A'-'Z' '0'-'9']
 let white = [ ' ' '\t']
 
 rule main = parse
@@ -30,7 +32,9 @@ rule main = parse
       newline := true ;
       main lexbuf
     }
-  | alpha+ as s { STRING s }
+  | (alphanum+ white?)+ as s { STRING s }
   | white+ { WHITE }
+  | italic { ITALIC }
+  | bold { BOLD }
   | eof { EOF }
   | _ as c { CHAR c }
