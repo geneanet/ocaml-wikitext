@@ -1,9 +1,20 @@
 = Heading 1 =
+
+paragraph
+
 == Heading 2 ==
+
+paragraph
+
 === Heading 3 ===
+
+paragraph
 ==== Heading 4 ====
+paragraph
 ===== Heading 5 =====
+paragraph
 ====== Heading 6 ======
+paragraph
 
 ----
 
@@ -41,11 +52,3 @@ or ends a list or an indented part.
 : Definition2
 : Definition3
 : Definition4
-
-To ''italicize text'', put two consecutive apostrophes on each side of it.
-
-Three apostrophes each side will '''bold the text'''.
-
-Five consecutive apostrophes on each side (two for italics plus three for bold) produces '''''bold italics'''''.
-
-'''''Italic and bold formatting''''' works correctly only within a single line.
