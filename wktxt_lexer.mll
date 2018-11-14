@@ -52,13 +52,12 @@ rule main = parse
       HEADER (String.length s)
   }
   | '\n' {
-      print_endline __LOC__ ;
       Lexing.new_line lexbuf ;
       newline := true ;
       main lexbuf
     }
-  | (alphanum+ white?)+ as s { STRING s }
-  | white+ { WHITE }
+  | (wordchar+ ws?)+ as s { STRING s }
+  | ws+ { main lexbuf }
   | italic { ITALIC }
   | bold { BOLD }
   | eof { EOF }
