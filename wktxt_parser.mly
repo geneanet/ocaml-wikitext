@@ -2,11 +2,11 @@
   open Wktxt_type
 %}
 
-%token<int> HEADER
+%token<int> HEADER LIST NUMLIST
 %token<string> STRING
 %token<char> CHAR
 %token ITALIC BOLD
-%token EOF WHITE
+%token EOF HRULE EMPTYLINE
 
 %start document
 %type <Wktxt_type.document> document
