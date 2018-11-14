@@ -1,11 +1,11 @@
 %{
-    open Wktxt_type
+  open Wktxt_type
 %}
 
 %token<int> HEADER
 %token<string> STRING
 %token<char> CHAR
-%token EOF WHITE HEADER1 HEADER2 HEADER3 HEADER4 HEADER5 HEADER6
+%token EOF WHITE
 
 %start document
 %type <Wktxt_type.document> document
