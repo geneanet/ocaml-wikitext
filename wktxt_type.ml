@@ -1,11 +1,17 @@
-type document = fragment list
+type document = block list
 [@@deriving show]
 
-and fragment =
-  | Header of int * fragment list
+and block =
+  | Header of int * inline list
+[@@deriving show]
+
+and inline =
+  | Bold of inline list
+  | Italic of inline list
+  | White
   | String of string
   | Char of char
-  | White
 [@@deriving show]
+    
 (* [@@deriving show] va créer automatique les fonctions
-   [show_document], [show_fragment], ... *)
+   [show_document], [show_block], ... *)
