@@ -19,7 +19,18 @@ document:
 ;
 
 block:
-  | h = HEADER f = inline+ { Header (h, f) }
+  | h1 = HEADER i = inline+ HEADER { 
+      Header (h1, i)
+    }
+  | l = LIST i = inline+ {
+      List (l, i)
+  }
+  | l = NUMLIST i = inline+ {
+      Num_list (l, i)
+  }
+  | HRULE { Hrule }
+  | EMPTYLINE { Emptyline } (* do not match alone, use it in others*)
+  | i = inline+ { Paragraph i }
 ;
 
 (* inlines *)
@@ -29,7 +40,6 @@ inline:
   | BOLD i = inline+ BOLD { Bold i }
   | s = STRING { String s }
   | c = CHAR { Char c }
-  | WHITE { White }
 ;
 
 %%
