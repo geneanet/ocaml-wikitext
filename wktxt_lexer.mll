@@ -28,6 +28,29 @@ rule main = parse
   | '='+ as s {
       token_or_str (s, HEADER (String.length s))
     }
+  | '*'+ as s { 
+      token_or_str (s, LIST (String.length s))
+    }
+  | '#'+ as s { 
+      token_or_str (s, NUMLIST (String.length s))
+    }
+  | hrule as s {
+      token_or_str (s, HRULE )
+    }
+  | ws*'\n' {
+      Lexing.new_line lexbuf ;
+      if !newline then
+        EMPTYLINE
+      else begin
+        newline := true ;
+        main lexbuf
+      end
+    }
+  | '='+ as s '\n' {
+      Lexing.new_line lexbuf ;
+      newline := true ;
+      HEADER (String.length s)
+  }
   | '\n' {
       print_endline __LOC__ ;
       Lexing.new_line lexbuf ;
