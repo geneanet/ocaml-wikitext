@@ -1,7 +1,7 @@
 {
   open Wktxt_parser
 
-  let debug = true
+  let debug = false
   let newline = ref true
 
   (* Retourne soit [String str], soit [token], suivant si
@@ -21,8 +21,8 @@ let hrule = "----"
 let bold = "'''"
 let italic = "''"
 let alphanum = ['a'-'z' 'A'-'Z' '0'-'9']
-let wordchar = (alphanum) | ['.' ',' '-' '"']
 let ws = [ ' ' '\t']
+let wordchar = [^''' '=' '*' '#' '\n' ' ' '\t']
 
 rule main = parse
   | '='+ as s {
