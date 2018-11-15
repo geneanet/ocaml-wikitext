@@ -7,7 +7,6 @@ and block =
   | List of int * inline list
   | Num_list of int * inline list
   | Hrule
-  | Emptyline
 [@@deriving show]
 
 and inline =
