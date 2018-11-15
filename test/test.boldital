@@ -1,6 +1,18 @@
-To ''italicize text'', put two consecutive apostrophes on each side of it.
+Some '''bold text''' in the middle of the line
 
-Three apostrophes each side will '''bold the text'''.
+'''bold text''' at begining of a line
+
+bold text at '''end of line'''
+
+'''bold text on a complete line'''
+
+Some ''italicize text'' in the middle of the line
+
+''italic text'' at begining of a line
+
+italic text at ''end of line''
+
+''italic text on a complete line''
 
 Five consecutive apostrophes on each side (two for italics plus three for bold) produces '''''bold italics'''''.
 

@@ -14,31 +14,42 @@
 %%
 
 document:
-  | EOF { [] }
-  | block+ EOF { $1 }
+  | b = block* EOF { b }
 ;
 
 block:
-  | h1 = HEADER i = inline+ HEADER EMPTYLINE* { 
+  | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* { 
       Header (h1, i)
     }
-  | l = LIST i = inline+ EMPTYLINE* {
+  | l = LIST i = inline(regular)+ EMPTYLINE* {
       List (l, i)
-  }
-  | l = NUMLIST i = inline+ EMPTYLINE* {
+    }
+  | l = NUMLIST i = inline(regular)+ EMPTYLINE* {
       Num_list (l, i)
-  }
+    }
   | HRULE EMPTYLINE* { Hrule }
-  | i = inline+ EMPTYLINE* { Paragraph i }
+  | i = inline(regular)+ EMPTYLINE* { Paragraph i }
 ;
 
 (* inlines *)
 
-inline:
-  | ITALIC i = inline+ ITALIC { Italic i }
-  | BOLD i = inline+ BOLD { Bold i }
+regular:
+  | ITALIC i = inline(italic)+ ITALIC { Italic i }
+  | BOLD i = inline(bold)+ BOLD { Bold i }
+;
+
+italic:
+  | BOLD i = inline(bold)+ BOLD { Bold i }
+;
+
+bold:
+  | ITALIC i = inline(italic)+ ITALIC { Italic i }
+;
+
+inline(param):
   | s = STRING { String s }
   | c = CHAR { Char c }
+  | p = param { p }
 ;
 
 %%

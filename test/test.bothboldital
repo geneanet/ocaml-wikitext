@@ -1,0 +1,20 @@
+'''bold''bolditalic'''''
+
+''italic'''bolditalic'''''
+
+'''''bolditalic''bold'''
+
+'''''bolditalic'''italic''
+
+'''bold'''''italic''
+
+''italic'''''bold'''
+
+Five consecutive apostrophes on each side (two for italics plus three for bold) produces '''''bold italics'''''.
+
+'''''Italic and bold formatting''''' works correctly only within a single line.
+
+
+'''''bolditalic''bold'''
+
+'''''bolditalic'''italic''
