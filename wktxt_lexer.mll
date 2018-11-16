@@ -76,7 +76,3 @@ rule main = parse
       if debug then Printf.printf "EOF\n" ;
       EOF
     }
-  | _ as c {
-      if debug then Printf.printf "CHAR : %c\n" c ;
-      CHAR c
-    }

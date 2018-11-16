@@ -4,7 +4,6 @@
 
 %token<int> HEADER LIST NUMLIST
 %token<string> STRING
-%token<char> CHAR
 %token ITALIC BOLD
 %token EOF HRULE EMPTYLINE
 
@@ -48,7 +47,6 @@ bold:
 
 inline(param):
   | s = STRING { String s }
-  | c = CHAR { Char c }
   | p = param { p }
 ;
 
