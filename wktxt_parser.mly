@@ -4,7 +4,7 @@
 
 %token<int> HEADER LIST NUMLIST
 %token<string> STRING
-%token ITALIC BOLD
+%token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
 
 %start document
@@ -31,10 +31,32 @@ block:
 ;
 
 (* inlines *)
+    (* STRING MATCH temporaire *)
+    (* cas "B inline BI inline I" et "I inline BI inline B" à ajouter*)
 
 regular:
   | ITALIC i = inline(italic)+ ITALIC { Italic i }
   | BOLD i = inline(bold)+ BOLD { Bold i }
+  | BOLDITALIC i = inline(italic)+ BOLDITALIC {
+      Bold [ Italic i ]
+    }
+
+    (* REDUCE/REDUCE CONFLICTS
+
+  | BOLDITALIC i1 = inline(italic)+ ITALIC i2 = inline(bold)+ BOLD {
+      Bold [ Italic i1 ; i2 ]
+    }
+  | BOLDITALIC i1 = inline(bold)+ BOLD i2 = inline(italic)+ ITALIC {
+      Italic [ Bold i1 ; i2 ]
+    }
+  | ITALIC i1 = inline(italic)+ BOLD i2 = inline(bold)+ BOLDITALIC {
+      Italic [ i1 ; Bold i2 ]
+    }
+  | BOLD i1 = inline(bold)+ ITALIC i2 = inline(italic)+ BOLDITALIC {
+      Bold [ i1 ; Italic i2 ]
+    }
+
+    *)
 ;
 
 italic:

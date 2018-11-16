@@ -72,6 +72,10 @@ rule main = parse
       if debug then Printf.printf "BOLD\n" ;
       BOLD
     }
+  | bold italic {
+      if debug then Printf.printf "BOLDITALIC\n" ;
+      BOLDITALIC
+    }
   | eof _* {
       if debug then Printf.printf "EOF\n" ;
       EOF

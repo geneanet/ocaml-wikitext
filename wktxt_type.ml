@@ -12,6 +12,7 @@ and block =
 and inline =
   | Bold of inline list
   | Italic of inline list
+  | Bolditalic of inline list
   | String of string
 [@@deriving show]
     
