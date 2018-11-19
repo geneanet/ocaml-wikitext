@@ -1,10 +1,9 @@
 opam-version: "2.0"
-maintainer: ""
-authors: ""
-homepage: ""
-bug-reports: ""
-dev-repo: ""
-license: ""
+maintainer: "Julien SAGOT <julien.sagot@geneanet.org>"
+authors: "Maxence ABELA"
+homepage: "https://github.com/geneanet/ocaml-wikitext"
+bug-reports: "https://github.com/geneanet/ocaml-wikitext/issues"
+dev-repo: "git+https://github.com/geneanet/ocaml-wikitext.git"
 synopsis: "Wikitext parser"
 build: [
   [ make "build" ] {ocaml-native}
@@ -12,6 +11,7 @@ build: [
 install: [ make "install" ]
 remove: ["ocamlfind" "remove" "wikitext"]
 depends: [
-  "dune"
+  "dune" { build & >= "1.5.1" }
   "ppx_deriving"
+  "ounit" {with-test & >= "2.0.0"}
 ]

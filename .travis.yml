@@ -21,5 +21,7 @@ script:
     set -ex ;
     export OPAMYES=1 ;
     eval $(opam config env) ;
-    opam install dune ppx_deriving menhir ounit ;
+    opam update ;
+    opam pin add wikitext . --no-action ;
+    opam install wikitext --with-test --deps-only ;
     make test ;
