@@ -31,32 +31,35 @@ block:
 ;
 
 (* inlines *)
-    (* STRING MATCH temporaire *)
-    (* cas "B inline BI inline I" et "I inline BI inline B" à ajouter*)
 
 regular:
   | ITALIC i = inline(italic)+ ITALIC { Italic i }
   | BOLD i = inline(bold)+ BOLD { Bold i }
-  | BOLDITALIC i = inline(italic)+ BOLDITALIC {
+  | BOLDITALIC i = inline(bolditalic)+ BOLDITALIC {
       Bold [ Italic i ]
     }
-
-    (* REDUCE/REDUCE CONFLICTS
-
-  | BOLDITALIC i1 = inline(italic)+ ITALIC i2 = inline(bold)+ BOLD {
-      Bold [ Italic i1 ; i2 ]
+  | BOLDITALIC i1 = inline(bolditalic)+ ITALIC i2 = inline(bold)+ BOLD {
+      Bold (Italic i1 :: i2)
     }
-  | BOLDITALIC i1 = inline(bold)+ BOLD i2 = inline(italic)+ ITALIC {
-      Italic [ Bold i1 ; i2 ]
+  | BOLDITALIC i1 = inline(bolditalic)+ BOLD i2 = inline(italic)+ ITALIC {
+      Italic (Bold i1 :: i2)
     }
-  | ITALIC i1 = inline(italic)+ BOLD i2 = inline(bold)+ BOLDITALIC {
-      Italic [ i1 ; Bold i2 ]
+  | ITALIC i1 = inline(italic)+ BOLD i2 = inline(bolditalic)+ BOLDITALIC {
+      Italic ( i1 @ [Bold i2] )
     }
-  | BOLD i1 = inline(bold)+ ITALIC i2 = inline(italic)+ BOLDITALIC {
-      Bold [ i1 ; Italic i2 ]
+  | BOLD i1 = inline(bold)+ ITALIC i2 = inline(bolditalic)+ BOLDITALIC {
+      Bold ( i1 @ [Italic i2] )
     }
 
-    *)
+(*  Nouveau type pour envelopper les résultats de ceux deux là ?
+
+  | BOLD i1 = inline(bold)+ BOLDITALIC i2 = inline(italic)+ ITALIC {
+      Bold i1 @ Italic i2
+    }
+  | ITALIC i1 = inline(italic)+ BOLDITALIC i2 = inline(bold)+ BOLD {
+      Italic i1 @ Bold i2
+    }
+*)
 ;
 
 italic:
@@ -65,6 +68,10 @@ italic:
 
 bold:
   | ITALIC i = inline(italic)+ ITALIC { Italic i }
+;
+
+bolditalic:
+  | s = STRING { String s }
 ;
 
 inline(param):
