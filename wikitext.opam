@@ -10,7 +10,8 @@ build: [
   [ make "build" ] {ocaml-native}
 ]
 install: [ make "install" ]
-remove: ["ocamlfind" "remove" "jingoo"]
+remove: ["ocamlfind" "remove" "wikitext"]
 depends: [
+  "dune"
   "ppx_deriving"
 ]
