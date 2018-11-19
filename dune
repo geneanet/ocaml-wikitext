@@ -1,12 +1,21 @@
-(menhir 
+(menhir
   (flags --explain)
   (modules wktxt_parser) )
 
 (ocamllex (modules wktxt_lexer) )
 
+(library
+  (public_name wikitext)
+  (libraries ppx_deriving.show)
+  (modules wktxt_parser wktxt_lexer wktxt_type)
+  (preprocess (pps ppx_deriving.show))
+  (wrapped false)
+)
+
 (executable
   (name wktxt_cmdline)
   (public_name wktxt_cmdline)
-  (libraries ppx_deriving.show)
+  (modules wktxt_cmdline)
+  (libraries wikitext)
   (preprocess (pps ppx_deriving.show))
 )

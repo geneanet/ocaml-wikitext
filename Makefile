@@ -7,6 +7,8 @@ build:
 test: build
 	echo "\ntest wikitext :" ; _build/default/wktxt_cmdline.exe < test/test.wikitext; echo "\ntest bold OR italic :\n" ; _build/default/wktxt_cmdline.exe < test/test.boldital | head -n 100; echo "\ntest bold AND italic :\n" ; _build/default/wktxt_cmdline.exe < test/test.bothboldital ;
 
+test:
+	dune build @runtest
 
 clean:
 	dune clean

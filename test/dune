@@ -1,0 +1,9 @@
+(executable
+  (name test)
+  (libraries wikitext oUnit)
+)
+
+(alias
+  (name runtest)
+  (action  (run ./test.exe) )
+)
