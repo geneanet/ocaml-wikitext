@@ -1,0 +1,25 @@
+sudo: required
+
+language: c
+
+os:
+  - linux
+
+env:
+  - OCAML_VERSION=4.05 OPAM_VERSION=2.0.0
+  - OCAML_VERSION=4.06 OPAM_VERSION=2.0.0
+  - OCAML_VERSION=4.07 OPAM_VERSION=2.0.0
+
+matrix:
+  fast_finish: true
+
+install:
+  - wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-ocaml.sh
+
+script:
+  - bash -ex .travis-ocaml.sh ;
+    set -ex ;
+    export OPAMYES=1 ;
+    eval $(opam config env) ;
+    opam install ppx_deriving menhir ounit ;
+    make test ;
