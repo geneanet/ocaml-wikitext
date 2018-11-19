@@ -20,6 +20,10 @@ install: wikitext.install
 uninstall: wikitext.install
 	$(DUNE) uninstall wikitext
 
+js:
+	$(DUNE) build test/wikitext_js.bc.js
+	cp _build/default/test/wikitext_js.bc.js test/wikitext.js
+
 clean:
 	dune clean
 

@@ -14,4 +14,5 @@ depends: [
   "dune" { build & >= "1.5.1" }
   "ppx_deriving"
   "ounit" {with-test & >= "2.0.0"}
+  "js_of_ocaml" {with-test}
 ]
