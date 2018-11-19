@@ -18,64 +18,58 @@ document:
 
 block:
   | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* { 
-      Header (h1, i)
+      Header (h1, (List.flatten i))
     }
   | l = LIST i = inline(regular)+ EMPTYLINE* {
-      List (l, i)
+      List (l, (List.flatten i))
     }
   | l = NUMLIST i = inline(regular)+ EMPTYLINE* {
-      Num_list (l, i)
+      Num_list (l, (List.flatten i))
     }
   | HRULE EMPTYLINE* { Hrule }
-  | i = inline(regular)+ EMPTYLINE* { Paragraph i }
+  | i = inline(regular)+ EMPTYLINE* { Paragraph (List.flatten i) }
 ;
 
 (* inlines *)
 
 regular:
-  | ITALIC i = inline(italic)+ ITALIC { Italic i }
-  | BOLD i = inline(bold)+ BOLD { Bold i }
-  | BOLDITALIC i = inline(bolditalic)+ BOLDITALIC {
-      Bold [ Italic i ]
+  | ITALIC i = inline(noformat)+ ITALIC { [Italic (List.flatten i)] }
+  | BOLD i = inline(noformat)+ BOLD { [Bold (List.flatten i)] }
+  | BOLDITALIC i = inline(noformat)+ BOLDITALIC {
+      [Bold [ Italic (List.flatten i) ]]
     }
-  | BOLDITALIC i1 = inline(bolditalic)+ ITALIC i2 = inline(bold)+ BOLD {
-      Bold (Italic i1 :: i2)
+  | BOLDITALIC i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ BOLD {
+      [Bold (Italic (List.flatten i1) :: (List.flatten i2))]
     }
-  | BOLDITALIC i1 = inline(bolditalic)+ BOLD i2 = inline(italic)+ ITALIC {
-      Italic (Bold i1 :: i2)
+  | BOLDITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ ITALIC {
+      [Italic (Bold (List.flatten i1) :: (List.flatten i2))]
     }
-  | ITALIC i1 = inline(italic)+ BOLD i2 = inline(bolditalic)+ BOLDITALIC {
-      Italic ( i1 @ [Bold i2] )
+  | ITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ BOLDITALIC {
+      [Italic ( (List.flatten i1) @ [Bold (List.flatten i2)] )]
     }
-  | BOLD i1 = inline(bold)+ ITALIC i2 = inline(bolditalic)+ BOLDITALIC {
-      Bold ( i1 @ [Italic i2] )
+  | BOLD i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ BOLDITALIC {
+      [Bold ( (List.flatten i1) @ [Italic (List.flatten i2)] )]
     }
-
-(*  Nouveau type pour envelopper les résultats de ceux deux là ?
-
-  | BOLD i1 = inline(bold)+ BOLDITALIC i2 = inline(italic)+ ITALIC {
-      Bold i1 @ Italic i2
+  | BOLD i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ ITALIC i3 = inline(noformat)+ BOLD {
+      [Bold (List.flatten i1 @ [Italic (List.flatten i2)] @ List.flatten i3)]
     }
-  | ITALIC i1 = inline(italic)+ BOLDITALIC i2 = inline(bold)+ BOLD {
-      Italic i1 @ Bold i2
+  | ITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ BOLD i3 = inline(noformat)+ ITALIC {
+      [Italic (List.flatten i1 @ [Bold (List.flatten i2)] @ List.flatten i3)]
     }
-*)
+  | BOLD i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ ITALIC {
+      [Bold (List.flatten i1)] @ [Italic (List.flatten i2)]
+    }
+  | ITALIC i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ BOLD {
+      [Italic (List.flatten i1)] @ [Bold (List.flatten i2)]
+    }
 ;
 
-italic:
-  | BOLD i = inline(bold)+ BOLD { Bold i }
-;
-
-bold:
-  | ITALIC i = inline(italic)+ ITALIC { Italic i }
-;
-
-bolditalic:
-  | s = STRING { String s }
+noformat:
+  | s = STRING { [String s] }
 ;
 
 inline(param):
-  | s = STRING { String s }
+  | s = STRING { [String s] }
   | p = param { p }
 ;
 
