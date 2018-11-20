@@ -71,6 +71,28 @@ let bolditalic_1 _ctx =
     ]
     "Lorem '''''ipsum'''''."
 
+let paragraph_1 _ctx =
+  assert_equal
+    [ Paragraph [ String "Lorem ipsum" ; String "\n"] ;
+      Paragraph [ String "dolores sit amet"]
+    ]
+    "Lorem ipsum\n  \ndolores sit amet"
+
+let space_1 _ctx =
+  assert_equal
+    [ Paragraph [ String "italic text at"
+                ; Italic [ String " end of line" ]
+                ]
+    ]
+    "italic text at'' end of line''"
+
+let space_2 _ctx =
+  assert_equal
+    [ Paragraph [ String "Lorem ipsum" ; String "\n";
+                  String "dolores"
+                ]
+    ]
+    "Lorem ipsum\ndolores"
 
 let () =
   run_test_tt_main
@@ -82,4 +104,7 @@ let () =
                   ; "italic_3" >:: italic_3
                   ; "italic_4" >:: italic_4
                   ; "bolditalic_1" >:: bolditalic_1
+                  ; "paragraph_1" >:: paragraph_1
+                  ; "space_1" >:: space_1
+                  ; "space_2" >:: space_2
                   ])
