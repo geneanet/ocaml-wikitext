@@ -58,7 +58,7 @@ rule main = parse
         main lexbuf
       end
     }
-  | (wordchar+ ws?)+ as s {
+  | (ws? wordchar+ ws?)+ as s {
       newline := false ;
       if debug then Printf.printf "STRING : %s\n" s ;
       STRING s
