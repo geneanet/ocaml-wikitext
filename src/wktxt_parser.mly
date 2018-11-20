@@ -24,7 +24,7 @@ block:
       List (l, (List.flatten i))
     }
   | l = NUMLIST i = inline(regular)+ EMPTYLINE* {
-      Num_list (l, (List.flatten i))
+      NumList (l, (List.flatten i))
     }
   | HRULE EMPTYLINE* { Hrule }
   | i = inline(regular)+ EMPTYLINE* { Paragraph (List.flatten i) }
