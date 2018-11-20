@@ -10,7 +10,7 @@ let bold_1 _ctx =
   assert_equal
     [ Paragraph [ String "Lorem "
                 ; Bold [ String "ipsum dolor" ]
-                ; String "  sit amet"
+                ; String " sit amet"
                 ]
     ]
     "Lorem '''ipsum dolor''' sit amet"
@@ -52,14 +52,14 @@ let italic_2 _ctx =
 let italic_3 _ctx =
   assert_equal
     [ Paragraph [ String "italic text at "
-                ; Bold [ String "end of line" ]
+                ; Italic [ String "end of line" ]
                 ]
     ]
     "italic text at ''end of line''"
 
 let italic_4 _ctx =
   assert_equal
-    [ Paragraph [ String "italic text on a complete line" ] ]
+    [ Paragraph [Italic [ String "italic text on a complete line" ] ] ]
     "''italic text on a complete line''"
 
 let bolditalic_1 _ctx =
