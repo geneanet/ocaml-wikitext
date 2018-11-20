@@ -22,7 +22,7 @@ let bold = "'''"
 let italic = "''"
 let alphanum = ['a'-'z' 'A'-'Z' '0'-'9']
 let ws = [ ' ' '\t']
-let wordchar = [^''' '=' '*' '#' '\n' ' ' '\t']
+let wordchar = [^''' '=' '*' '#' '\n']
 
 rule main = parse
   | '='+ as s {
@@ -55,10 +55,10 @@ rule main = parse
       end
       else begin
         newline := true ;
-        main lexbuf
+        STRING "\n"
       end
     }
-  | (ws? wordchar+ ws?)+ as s {
+  | wordchar+ as s {
       newline := false ;
       if debug then Printf.printf "STRING : %s\n" s ;
       STRING s
