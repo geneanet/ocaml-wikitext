@@ -24,4 +24,4 @@ script:
     opam update ;
     opam pin add wikitext . --no-action ;
     opam install wikitext --with-test --deps-only ;
-    make test ;
+    make runtest ;
