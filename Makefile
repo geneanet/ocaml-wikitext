@@ -1,6 +1,6 @@
 DUNE=dune
 
-.PHONY: all test install uninstall clean example retest
+.PHONY: all install uninstall clean example retest
 
 build:
 	$(DUNE) build
@@ -23,5 +23,3 @@ js:
 
 clean:
 	dune clean
-
-retest: clean test
