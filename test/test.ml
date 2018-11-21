@@ -94,6 +94,22 @@ let space_2 _ctx =
     ]
     "Lorem ipsum\ndolores"
 
+let link_1 _ctx =
+  assert_equal
+    [ Paragraph [ String "This is an "; ExtLink "www.test.com external link"
+                ; String "."
+                ]
+    ]
+    "This is an [www.test.com external link]."
+
+let link_2 _ctx =
+  assert_equal
+    [ Paragraph [ String "This is a "; Link "PageName|link"
+                ; String "."
+                ]
+    ]
+    "This is a [[PageName|link]]."
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "bold_1" >:: bold_1
@@ -107,4 +123,6 @@ let () =
                   ; "paragraph_1" >:: paragraph_1
                   ; "space_1" >:: space_1
                   ; "space_2" >:: space_2
+                  ; "link_1" >:: link_1
+                  ; "link_2" >:: link_2
                   ])
