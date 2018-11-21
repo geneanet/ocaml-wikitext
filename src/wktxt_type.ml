@@ -7,12 +7,10 @@ and block =
   | List of int * inline list
   | NumList of int * inline list
   (*
-    for future list parsing
-    List of inline list
-    NumList of inline list
+    List of block list list
+    NumList of block list list
   *)
-  | ListItem of block list
-  | NumListItem of block list
+  | Definition of def_line list
   | Table of table_block list list
   | Hrule
 [@@deriving show { with_path = false }]
@@ -28,6 +26,10 @@ and inline =
 and table_block =
   | TableHead of inline list
   | TableItem of inline list
+
+and def_line =
+  | Term of inline list
+  | Def of inline list
 [@@deriving show { with_path = false }]
 
 (* [@@deriving show] va créer automatique les fonctions
