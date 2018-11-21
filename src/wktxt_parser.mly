@@ -3,7 +3,7 @@
 %}
 
 %token<int> HEADER LIST NUMLIST
-%token<string> STRING
+%token<string> STRING LINK EXTLINK
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
 
@@ -66,10 +66,14 @@ regular:
 
 noformat:
   | s = STRING { [String s] }
+  | s = LINK { [Link s] }
+  | s = EXTLINK { [ExtLink s] }
 ;
 
 inline(param):
   | s = STRING { [String s] }
+  | s = LINK { [Link s] }
+  | s = EXTLINK { [ExtLink s] }
   | p = param { p }
 ;
 
