@@ -16,11 +16,11 @@ and block =
 [@@deriving show { with_path = false }]
 
 and inline =
-  | NamedLink of inline list
-  | Link of inline list
   | Bold of inline list
   | Italic of inline list
   | String of string
+  | Link of string
+  | ExtLink of string
 [@@deriving show { with_path = false }]
 
 and table_block =
