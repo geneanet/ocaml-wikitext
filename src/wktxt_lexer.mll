@@ -89,3 +89,11 @@ rule main = parse
       if debug then Printf.printf "EOF\n" ;
       EOF
     }
+
+{
+
+  let main lexbuf =
+    newline := true ;
+    main lexbuf
+
+}
