@@ -110,6 +110,35 @@ let link_2 _ctx =
     ]
     "This is a [[PageName|link]]."
 
+let list_1 _ctx =
+  assert_equal
+    [ List [ [ Paragraph [ String "1" ] ]
+           ; [ Paragraph [ String "2" ] ]
+           ; [ Paragraph [ String "3" ] ]
+        ]
+    ]
+    "* 1\n\
+     * 2\n\
+     * 3"
+
+let list_2 _ctx =
+  assert_equal
+    [ List [ [ Paragraph [ String "1" ]
+             ; List [ [ Paragraph [ String "1.1" ] ]
+                    ; [ Paragraph [ String "1.2" ]
+                      ; List [ [ Paragraph [ String "1.2.1" ] ] ]
+                      ]
+                 ]
+             ]
+           ; [ Paragraph [ String "2" ] ]
+        ]
+    ]
+    "* 1\n\
+     ** 1.1\n\
+     ** 1.2\n\
+     *** 1.2.1\n\
+     * 2"
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "bold_1" >:: bold_1
@@ -125,4 +154,6 @@ let () =
                   ; "space_2" >:: space_2
                   ; "link_1" >:: link_1
                   ; "link_2" >:: link_2
+                  ; "list_1" >:: list_1
+                  ; "list_2" >:: list_2
                   ])
