@@ -4,10 +4,9 @@ type document = block list
 and block =
   | Header of int * inline list
   | Paragraph of inline list
-  | List of int * inline list
+  | List of block list list
   | NumList of int * inline list
   (*
-    List of block list list
     NumList of block list list
   *)
   | DefList of def_block list
