@@ -26,19 +26,19 @@ let wordchar = [^''' '=' '*' '#' '\n' '[' ']']
 let linkchar = [^'[' ']']
 
 rule main = parse
-  | '='+ as s {
+  | '='+ as s ws* {
       if debug then Printf.printf "HEADER START %d\n" (String.length s) ;
       token_or_str (s, HEADER (String.length s))
     }
-  | '*'+ as s { 
+  | '*'+ as s ws*{ 
       if debug then Printf.printf "LIST %d\n" (String.length s) ;
       token_or_str (s, LIST (String.length s))
     }
-  | '#'+ as s { 
+  | '#'+ as s ws*{ 
       if debug then Printf.printf "NUMLIST %d\n" (String.length s);
       token_or_str (s, NUMLIST (String.length s))
     }
-  | hrule as s {
+  | hrule as s ws*{
       if debug then Printf.printf "HRULE\n" ;
       token_or_str (s, HRULE )
     }
