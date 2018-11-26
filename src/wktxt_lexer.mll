@@ -72,7 +72,6 @@ rule main = parse
       if debug then Printf.printf "STRING : %s\n" s ;
       STRING s
     }
-  | ws+ { main lexbuf }
   | italic {
       if debug then Printf.printf "ITALIC\n" ;
       ITALIC 
@@ -89,11 +88,3 @@ rule main = parse
       if debug then Printf.printf "EOF\n" ;
       EOF
     }
-
-{
-
-  let main lexbuf =
-    newline := true ;
-    main lexbuf
-
-}

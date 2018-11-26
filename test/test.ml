@@ -2,6 +2,7 @@ open OUnit2
 open Wktxt_type
 
 let assert_equal expected input =
+  Wktxt_lexer.newline := true ;
   let lexbuf = Lexing.from_string input in
   let ast = Wktxt_parser.document Wktxt_lexer.main lexbuf in
   assert_equal ~printer:Wktxt_type.show_document expected ast
@@ -112,8 +113,8 @@ let link_2 _ctx =
 
 let list_1 _ctx =
   assert_equal
-    [ List [ [ Paragraph [ String "1" ] ]
-           ; [ Paragraph [ String "2" ] ]
+    [ List [ [ Paragraph [ String "1" ; String "\n" ] ]
+           ; [ Paragraph [ String "2" ; String "\n" ] ]
            ; [ Paragraph [ String "3" ] ]
         ]
     ]
@@ -123,10 +124,10 @@ let list_1 _ctx =
 
 let list_2 _ctx =
   assert_equal
-    [ List [ [ Paragraph [ String "1" ]
-             ; List [ [ Paragraph [ String "1.1" ] ]
-                    ; [ Paragraph [ String "1.2" ]
-                      ; List [ [ Paragraph [ String "1.2.1" ] ] ]
+    [ List [ [ Paragraph [ String "1" ; String "\n" ]
+             ; List [ [ Paragraph [ String "1.1" ; String "\n" ] ]
+                    ; [ Paragraph [ String "1.2" ; String "\n" ]
+                      ; List [ [ Paragraph [ String "1.2.1" ; String "\n" ] ] ]
                       ]
                  ]
              ]
