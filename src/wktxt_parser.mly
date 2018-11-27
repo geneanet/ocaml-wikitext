@@ -92,10 +92,10 @@ regular:
       [Italic (List.flatten i1 @ [Bold (List.flatten i2)] @ List.flatten i3)]
     }
   | BOLD i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ ITALIC {
-      [Bold (List.flatten i1)] @ [Italic (List.flatten i2)]
+      [Bold (List.flatten i1) ; Italic (List.flatten i2)]
     }
   | ITALIC i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ BOLD {
-      [Italic (List.flatten i1)] @ [Bold (List.flatten i2)]
+      [Italic (List.flatten i1) ; Bold (List.flatten i2)]
     }
 ;
 
