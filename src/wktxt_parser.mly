@@ -56,7 +56,7 @@ block:
       Header (h1, (List.flatten i))
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
-      List.hd ( List.hd (get_blocks 0 l))
+      List (get_blocks 1 l)
     }
   | l = NUMLIST i = inline(regular)+ EMPTYLINE* {
       NumList (l, (List.flatten i))
