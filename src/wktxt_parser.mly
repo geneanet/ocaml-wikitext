@@ -6,19 +6,10 @@
       | [] -> 0
       | (depth,_) :: _ -> depth
 
-  let get_pair_list_from_depth depth pair_list =
-    let get_tail pair_list =
-      match pair_list with
-        | [] -> []
-        | _ :: tl -> tl
-    in
-    let pair_list_tail = ref (get_tail pair_list) in
-    let () =
-      while !pair_list_tail <> [] && get_head_depth !pair_list_tail > depth do
-        pair_list_tail := get_tail !pair_list_tail
-      done
-    in
-      !pair_list_tail
+  let rec get_pair_list_from_depth depth pair_list =
+    match pair_list with
+      | (d, _) :: tl when d > depth -> get_pair_list_from_depth depth tl
+      | list -> list
 
   let rec get_blocks depth pair_list = (* -> block list list *)
     match pair_list with
