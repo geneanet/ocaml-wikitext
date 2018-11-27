@@ -20,7 +20,6 @@
 let hrule = "----"
 let bold = "'''"
 let italic = "''"
-let alphanum = ['a'-'z' 'A'-'Z' '0'-'9']
 let ws = [ ' ' '\t']
 let wordchar = [^''' '=' '*' '#' '\n' '[' ']']
 let linkchar = [^'[' ']']
