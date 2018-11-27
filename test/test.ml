@@ -140,6 +140,18 @@ let list_2 _ctx =
      *** 1.2.1\n\
      * 2"
 
+let list_3 _ctx =
+  assert_equal
+    [ List [ [ Paragraph [ String "1" ]]]
+    ]
+    "* 1"
+
+let list_4 _ctx =
+  assert_equal
+    [ List [[ List [ [ Paragraph [ String "1" ]]]]]
+    ]
+    "** 1"
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "bold_1" >:: bold_1
@@ -157,4 +169,6 @@ let () =
                   ; "link_2" >:: link_2
                   ; "list_1" >:: list_1
                   ; "list_2" >:: list_2
+                  ; "list_3" >:: list_3
+                  ; "list_4" >:: list_4
                   ])
