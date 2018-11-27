@@ -1,33 +1,40 @@
 %{
   open Wktxt_type
       
-  let get_tail pair_list =
-    match pair_list with
-      | [] -> []
-      | _ :: tl -> tl
-
   let get_head_depth pair_list =
     match pair_list with
       | [] -> 0
       | (depth,_) :: _ -> depth
 
-  let rec get_blocks depth pair_list =
+  let get_pair_list_from_depth depth pair_list =
+    let get_tail pair_list =
+      match pair_list with
+        | [] -> []
+        | _ :: tl -> tl
+    in
+    let pair_list_tail = ref (get_tail pair_list) in
+    let () =
+      while !pair_list_tail <> [] && get_head_depth !pair_list_tail > depth do
+        pair_list_tail := get_tail !pair_list_tail
+      done
+    in
+      !pair_list_tail
+
+  let rec get_blocks depth pair_list = (* -> block list list *)
     match pair_list with
       | [] -> []
       | (next_depth, next_paragraph) :: tl ->
-        if depth = next_depth then 
-          Paragraph (List.flatten next_paragraph) :: get_blocks depth tl
-        else if depth < next_depth then begin
-          let pair_list_tail = ref (get_tail pair_list) in
-          let () =
-          while !pair_list_tail <> [] && get_head_depth !pair_list_tail > depth do
-            pair_list_tail := get_tail !pair_list_tail
-          done in
-          List [ (get_blocks (depth + 1) pair_list) ] :: get_blocks (get_head_depth !pair_list_tail) !pair_list_tail
+        if depth = next_depth then begin
+          if next_depth < get_head_depth tl then
+            [Paragraph (List.flatten next_paragraph) ; List (get_blocks (depth + 1) tl)] ::
+              get_blocks depth (get_pair_list_from_depth depth tl)
+          else
+            [Paragraph (List.flatten next_paragraph)] :: get_blocks depth tl
         end
-        else begin
+        else if depth < next_depth then
+            [List (get_blocks (depth + 1) pair_list )] :: get_blocks depth tl 
+        else
           []
-        end
 %}
 
 %token<int> HEADER LIST NUMLIST
@@ -49,7 +56,7 @@ block:
       Header (h1, (List.flatten i))
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
-      List.hd (get_blocks 0 l)
+      List.hd ( List.hd (get_blocks 0 l))
     }
   | l = NUMLIST i = inline(regular)+ EMPTYLINE* {
       NumList (l, (List.flatten i))
