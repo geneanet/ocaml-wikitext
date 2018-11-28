@@ -1,3 +1,5 @@
+type order = Ordered | Unordered
+
 type document = block list
 [@@deriving show { with_path = false }]
 
@@ -5,10 +7,7 @@ and block =
   | Header of int * inline list
   | Paragraph of inline list
   | List of block list list
-  | NumList of int * inline list
-  (*
-    NumList of block list list
-  *)
+  | NumList of block list list
   | DefList of def_block list
   | Table of table_block list list
   | Hrule

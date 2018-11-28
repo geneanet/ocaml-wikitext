@@ -1,34 +1,31 @@
 %{
   open Wktxt_type
-      
-  let get_head_depth pair_list =
-    match pair_list with
-      | [] -> 0
-      | (depth,_) :: _ -> depth
+  (* pair_list : ((bool, int), inlines) *)
+
 
   let rec get_pair_list_from_depth depth pair_list =
     match pair_list with
-      | (d, _) :: tl when d > depth -> get_pair_list_from_depth depth tl
+      | ((_,d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
       | list -> list
 
   let rec get_blocks depth pair_list = (* -> block list list *)
     match pair_list with
-      | [] -> []
-      | (next_depth, next_paragraph) :: tl ->
-        if depth = next_depth then begin
-          if next_depth < get_head_depth tl then
-            [Paragraph (List.flatten next_paragraph) ; List (get_blocks (depth + 1) tl)] ::
-              get_blocks depth (get_pair_list_from_depth depth tl)
-          else
-            [Paragraph (List.flatten next_paragraph)] :: get_blocks depth tl
-        end
-        else if depth < next_depth then
-            [List (get_blocks (depth + 1) pair_list )] :: get_blocks depth tl 
-        else
-          []
+    | ((_,next_depth), next_paragraph) :: tl when depth = next_depth ->
+      begin match tl with
+        | ((_,d'), _) :: _ when next_depth < d' ->
+          [Paragraph (List.flatten next_paragraph) ; List (get_blocks (depth + 1) tl)] ::
+          get_blocks depth (get_pair_list_from_depth depth tl)
+        | _ ->
+          [Paragraph (List.flatten next_paragraph)] :: get_blocks depth tl
+      end
+    | ((_,next_depth), _) :: tl when depth < next_depth ->
+      [List (get_blocks (depth + 1) pair_list )] :: get_blocks depth tl
+    | _ -> []
+
 %}
 
-%token<int> HEADER LIST NUMLIST
+%token<int> HEADER
+%token<Wktxt_type.order*int> LIST
 %token<string> STRING LINK EXTLINK
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
@@ -47,10 +44,11 @@ block:
       Header (h1, (List.flatten i))
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
-      List (get_blocks 1 l)
-    }
-  | l = NUMLIST i = inline(regular)+ EMPTYLINE* {
-      NumList (l, (List.flatten i))
+      match List.hd l with
+      | ((list_type, _), _) when list_type = Ordered ->
+        NumList (get_blocks 1 l)
+      | _ ->
+        List (get_blocks 1 l)
     }
   | HRULE EMPTYLINE* { Hrule }
   | i = inline(regular)+ EMPTYLINE* { Paragraph (List.flatten i) }

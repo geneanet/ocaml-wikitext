@@ -31,11 +31,11 @@ rule main = parse
     }
   | '*'+ as s ws*{ 
       if debug then Printf.printf "LIST %d\n" (String.length s) ;
-      token_or_str (s, LIST (String.length s))
+      token_or_str (s, LIST (Unordered, String.length s))
     }
   | '#'+ as s ws*{ 
       if debug then Printf.printf "NUMLIST %d\n" (String.length s);
-      token_or_str (s, NUMLIST (String.length s))
+      token_or_str (s, LIST (Ordered, String.length s))
     }
   | hrule as s ws*{
       if debug then Printf.printf "HRULE\n" ;
