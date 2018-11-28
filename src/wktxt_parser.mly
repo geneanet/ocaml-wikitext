@@ -5,21 +5,26 @@
 
   let rec get_pair_list_from_depth depth pair_list =
     match pair_list with
-      | ((_,d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
+      | ((_, d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
       | list -> list
 
-  let rec get_blocks depth pair_list = (* -> block list list *)
+  let rec get_blocks depth pair_list prev_type = (* -> block list list *)
     match pair_list with
-    | ((_,next_depth), next_paragraph) :: tl when depth = next_depth ->
+    | ((_, next_depth), inlines) :: tl when depth = next_depth -> (* check current type for warning *)
       begin match tl with
-        | ((_,d'), _) :: _ when next_depth < d' ->
-          [Paragraph (List.flatten next_paragraph) ; List (get_blocks (depth + 1) tl)] ::
-          get_blocks depth (get_pair_list_from_depth depth tl)
+        | ((next_type, d'), _) :: _ when next_depth < d' && next_type = Unordered ->
+            [Paragraph (List.flatten inlines) ; List (get_blocks (depth + 1) tl Unordered )] ::
+              get_blocks depth (get_pair_list_from_depth depth tl) prev_type
+        | ((next_type, d'), _) :: _ when next_depth < d' && next_type = Ordered ->
+            [Paragraph (List.flatten inlines) ; NumList (get_blocks (depth + 1) tl Ordered )] ::
+              get_blocks depth (get_pair_list_from_depth depth tl) prev_type
         | _ ->
-          [Paragraph (List.flatten next_paragraph)] :: get_blocks depth tl
+          [Paragraph (List.flatten inlines)] :: get_blocks depth tl prev_type
       end
-    | ((_,next_depth), _) :: tl when depth < next_depth ->
-      [List (get_blocks (depth + 1) pair_list )] :: get_blocks depth tl
+    | ((next_type, next_depth), _) :: tl when depth < next_depth && next_type = Unordered ->
+      [List (get_blocks (depth + 1) pair_list Unordered)] :: get_blocks depth tl prev_type
+    | ((next_type, next_depth), _) :: tl when depth < next_depth && next_type = Ordered ->
+      [NumList (get_blocks (depth + 1) pair_list Ordered)] :: get_blocks depth tl prev_type
     | _ -> []
 
 %}
@@ -44,11 +49,11 @@ block:
       Header (h1, (List.flatten i))
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
-      match List.hd l with
+      match List.hd l with (* TODO use another function before get_blocks to handle singles*)
       | ((list_type, _), _) when list_type = Ordered ->
-        NumList (get_blocks 1 l)
+        NumList (get_blocks 1 l Ordered)
       | _ ->
-        List (get_blocks 1 l)
+        List (get_blocks 1 l Unordered)
     }
   | HRULE EMPTYLINE* { Hrule }
   | i = inline(regular)+ EMPTYLINE* { Paragraph (List.flatten i) }
