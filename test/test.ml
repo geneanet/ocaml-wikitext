@@ -152,6 +152,73 @@ let list_4 _ctx =
     ]
     "** 1"
 
+let list_5 _ctx =
+  assert_equal
+    [ NumList [[ Paragraph [ String "1"]]]]
+    "# 1"
+
+let list_6 _ctx =
+  assert_equal
+    [ NumList [[ NumList [ [ Paragraph [ String "1" ]]]]]
+    ]
+    "## 1"
+
+let list_mixed_1 _ctx =
+  assert_equal
+    [ NumList [[ Paragraph [ String "1" ; String "\n" ] 
+                ; List [[ Paragraph [String "1.1" ; String "\n"] ]] ]
+              ; [ Paragraph [ String "2" ] ]
+              ]
+    ]
+    "# 1\n\
+     **1.1\n\
+     # 2"
+
+let list_mixed_2 _ctx =
+  assert_equal
+    [ List [[ Paragraph [ String "1" ; String "\n" ] 
+                ; NumList [[ Paragraph [String "1.1" ; String "\n"] ]] ]
+              ; [ Paragraph [ String "2" ] ]
+              ]
+    ]
+    "* 1\n\
+     ##1.1\n\
+     * 2"
+
+let list_mixed_3 _ctx = (* no warning should be written on STDERR *)
+  assert_equal
+    [ 
+        List [[ Paragraph [ String "1" ; String "\n" ]]]
+      ; NumList [[ Paragraph [ String "2" ; String "\n" ]]]
+      ; List [[ Paragraph [ String "3" ]]]
+    ]
+    "* 1\n\
+     # 2\n\
+     * 3"
+
+let list_mixed_4 _ctx = (* no warning should be written on STDERR *)
+  assert_equal
+    [ 
+        NumList [[ Paragraph [ String "1" ; String "\n" ]]]
+      ; List [[ Paragraph [ String "2" ; String "\n" ]]]
+      ; NumList [[ Paragraph [ String "3" ]]]
+    ]
+    "# 1\n\
+     * 2\n\
+     # 3"
+
+let list_mixed_warning_1 _ctx = (* a warning should be written on STDERR for this test *)
+  assert_equal
+    [
+        List  [[ Paragraph [String "1" ; String "\n"]
+                ; NumList [ [ Paragraph [ String "1.1" ; String "\n" ]]
+                            ; [ Paragraph [ String "1.2" ]] ]
+              ]]
+    ]
+    "* 1\n\
+     ## 1.1\n\
+     ** 1.2"
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "bold_1" >:: bold_1
@@ -171,4 +238,11 @@ let () =
                   ; "list_2" >:: list_2
                   ; "list_3" >:: list_3
                   ; "list_4" >:: list_4
+                  ; "list_5" >:: list_5
+                  ; "list_6" >:: list_6
+                  ; "list_mixed_1" >:: list_mixed_1
+                  ; "list_mixed_2" >:: list_mixed_2
+                  ; "list_mixed_3" >:: list_mixed_3
+                  ; "list_mixed_4" >:: list_mixed_4
+                  ; "list_mixed_warning_1" >:: list_mixed_warning_1
                   ])
