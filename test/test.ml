@@ -211,7 +211,7 @@ let list_mixed_5 _ctx = (* no warning should be written on STDERR *)
   assert_equal
     [ 
         List [[ Paragraph [ String "1" ; String "\n"] ; 
-              NumList [[ Paragraph [ String "2" ; String "\n" ]]]
+              NumList [[ Paragraph [ String "1.1" ; String "\n" ]]]
              ]]
       ; NumList [[ Paragraph [ String "3" ]]]
     ]
@@ -254,10 +254,8 @@ let () =
                   ; "list_6" >:: list_6
                   ; "list_mixed_1" >:: list_mixed_1
                   ; "list_mixed_2" >:: list_mixed_2
-                  (* Not implemented
                   ; "list_mixed_3" >:: list_mixed_3
                   ; "list_mixed_4" >:: list_mixed_4
                   ; "list_mixed_5" >:: list_mixed_5
-                  *)
                   ; "list_mixed_warning_1" >:: list_mixed_warning_1
                   ])
