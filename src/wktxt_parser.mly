@@ -4,11 +4,13 @@
 
   let rec get_pair_list_from_depth depth pair_list =
     match pair_list with
-      | ((_, d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
-      | list -> list
+    | ((_, d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
+    | list -> list
 
   let rec get_blocks depth pair_list prev_type = (* -> block list list *)
     match pair_list with
+    | ((cur_type, next_depth), _) :: _ when depth = next_depth && depth = 1 && cur_type <> prev_type ->
+      []
     | ((cur_type, next_depth), inlines) :: tl when depth = next_depth ->
       if cur_type <> prev_type then
         prerr_string "Warning : Two list items of different type have been declared on the same level.\n"
@@ -28,6 +30,19 @@
     | ((next_type, next_depth), _) :: tl when depth < next_depth && next_type = Ordered ->
       [NumList (get_blocks (depth + 1) pair_list Ordered)] :: get_blocks depth tl prev_type
     | _ -> []
+  
+  let rec get_list l =
+    let rec get_next_list l list_type =
+      match l with
+      | [] -> []
+      | ((next_type, next_depth), _) :: _ when next_type <> list_type && next_depth = 1 -> l
+      | _ :: tl -> get_next_list tl list_type
+    in match l with
+    | [] -> []
+    | ((next_type, _), _) :: _ when next_type = Ordered ->
+      NumList (get_blocks 1 l Ordered) :: get_list (get_next_list l Ordered)
+    | _ ->
+      List (get_blocks 1 l Unordered) :: get_list (get_next_list l Unordered)
 %}
 
 %token<int> HEADER
@@ -42,22 +57,22 @@
 %%
 
 document:
-  | b = block* EOF { b }
+  | b = block* EOF { List.flatten b }
 ;
 
 block:
   | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* { 
-      Header (h1, (List.flatten i))
+      [ Header (h1, (List.flatten i)) ]
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
-      match List.hd l with (* TODO use another function before get_blocks to handle singles*)
-      | ((list_type, _), _) when list_type = Ordered ->
-        NumList (get_blocks 1 l Ordered)
-      | _ ->
-        List (get_blocks 1 l Unordered)
+      get_list l
     }
-  | HRULE EMPTYLINE* { Hrule }
-  | i = inline(regular)+ EMPTYLINE* { Paragraph (List.flatten i) }
+  | HRULE EMPTYLINE* {
+      [ Hrule ]
+    }
+  | i = inline(regular)+ EMPTYLINE* {
+      [ Paragraph (List.flatten i) ]
+    }
 ;
 
 (* inlines *)
