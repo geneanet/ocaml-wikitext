@@ -2,7 +2,6 @@
   open Wktxt_type
   (* pair_list : ((bool, int), inlines) *)
 
-
   let rec get_pair_list_from_depth depth pair_list =
     match pair_list with
       | ((_, d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
@@ -10,7 +9,10 @@
 
   let rec get_blocks depth pair_list prev_type = (* -> block list list *)
     match pair_list with
-    | ((_, next_depth), inlines) :: tl when depth = next_depth -> (* check current type for warning *)
+    | ((cur_type, next_depth), inlines) :: tl when depth = next_depth ->
+      if cur_type <> prev_type then
+        prerr_string "Warning : Two list items of different type have been declared on the same level.\n"
+        ;
       begin match tl with
         | ((next_type, d'), _) :: _ when next_depth < d' && next_type = Unordered ->
             [Paragraph (List.flatten inlines) ; List (get_blocks (depth + 1) tl Unordered )] ::
@@ -26,7 +28,6 @@
     | ((next_type, next_depth), _) :: tl when depth < next_depth && next_type = Ordered ->
       [NumList (get_blocks (depth + 1) pair_list Ordered)] :: get_blocks depth tl prev_type
     | _ -> []
-
 %}
 
 %token<int> HEADER
