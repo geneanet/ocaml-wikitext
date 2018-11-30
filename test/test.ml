@@ -170,13 +170,11 @@ let list_7 _ctx =
     "* 1\n\
      *** 1.1.1"
 
-(* This one fails. Input is ill-formed so its okay to fail. It could be improved later *)
-(* Not even sure we should bother with this case... *)
 let list_8 _ctx =
   assert_equal
     [ List [ [ Paragraph [ String "1" ; String "\n" ]
-             ; List [ [ List [ [ Paragraph [ String "1.1.1" ] ] ] ] ]
-             ; List [ [ Paragraph [ String "1.2" ] ] ] ]
+             ; List [ [ List [ [ Paragraph [ String "1.1.1" ; String "\n"] ] ] ]
+             ; [ Paragraph [ String "1.2" ] ] ] ]
            ]
     ]
     "* 1\n\
@@ -273,7 +271,7 @@ let () =
                   ; "list_5" >:: list_5
                   ; "list_6" >:: list_6
                   ; "list_7" >:: list_7
-                  (* ; "list_8" >:: list_8 *)
+                  ; "list_8" >:: list_8
                   ; "list_mixed_1" >:: list_mixed_1
                   ; "list_mixed_2" >:: list_mixed_2
                   ; "list_mixed_3" >:: list_mixed_3
