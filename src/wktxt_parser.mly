@@ -110,9 +110,7 @@ regular:
 ;
 
 noformat:
-  | s = STRING { [String s] }
-  | s = LINK { [Link s] }
-  | s = EXTLINK { [ExtLink s] }
+  | error { failwith "error" }
 ;
 
 inline(param):
