@@ -3,6 +3,8 @@ open Wktxt_type
 
 let assert_equal expected input =
   Wktxt_lexer.newline := true ;
+  Wktxt_lexer.last_def_term_line := 0 ;
+  Wktxt_lexer.last_def_term_depth := 0 ;
   let lexbuf = Lexing.from_string input in
   let ast = Wktxt_parser.document Wktxt_lexer.main lexbuf in
   assert_equal ~printer:Wktxt_type.show_document expected ast
@@ -249,6 +251,87 @@ let list_mixed_warning_1 _ctx = (* a warning should be written on STDERR for thi
      ## 1.1\n\
      ** 1.2"
 
+let def_1 _ctx =
+  assert_equal
+    [ DefList [ ([String "t1"], [
+                  Paragraph [ String "d1" ]
+                  ])
+              ] ]
+    ";t1:d1"
+
+let def_2 _ctx =
+  assert_equal
+    [ DefList [ ([String "t1" ; String "\n"], [
+                    Paragraph [ String "d1" ]
+                  ])
+              ] ]
+    ";t1\n\
+     :d1"
+
+let def_3 _ctx =
+  assert_equal
+    [ DefList [ ([String "t1" ; String "\n"],
+    [ Paragraph [ String "d1" ; String "\n" ]
+                  ; Paragraph [ String "d2" ]
+                  ])
+              ] ]
+    ";t1\n\
+     :d1\n\
+     :d2"
+
+let def_4 _ctx =
+  assert_equal
+    [ DefList [ ([], [ Paragraph [ String "d1" ] ])
+              ] ]
+    ":d1"
+
+let def_5 _ctx =
+  assert_equal
+    [ DefList [ ([String "t1"]), []]
+    ]
+    ";t1"
+
+let def_6 _ctx =
+  assert_equal
+    [ DefList [ ([String "t1"], [ Paragraph [ String "d1" ; String "\n" ]])
+                ; ([String "t2"], [ Paragraph [ String "d2" ]])]
+    ]
+    ";t1:d1\n\
+     ;t2:d2"
+
+let def_7 _ctx =
+  assert_equal
+    [ DefList [ ([String "t1"], [ Paragraph [ String "d1" ; String "\n" ]
+                                  ; DefList [ ([String "t1.1"], [ Paragraph [ String "d1.1" 
+                                                                            ; String "\n" ]])]
+                                  ])
+                ; ([String "t2"], [ Paragraph [ String "d2" ] ])
+              ]
+    ]
+    ";t1:d1\n\
+     :;t1.1:d1.1\n\
+     ;t2:d2"
+
+let def_8 _ctx =
+  assert_equal
+    [DefList [ ([] , [DefList [ ([String "t1"], [Paragraph [ String "d1" ]])]])]]
+    ":;t1:d1"
+
+let def_9 _ctx =
+  assert_equal
+    [ DefList [ ([String "t1"], [ Paragraph [ String "d1" ; String "\n" ]
+                                  ; DefList [ ([String "t1.1"], [ Paragraph [ String "d"
+                                                                            ; String ":::"
+                                                                            ; String "1.1" 
+                                                                            ; String "\n" ]])]
+                                  ])
+                ; ([String "t2"], [ Paragraph [ String "d2" ] ])
+              ]
+    ]
+    ";t1:d1\n\
+     :;t1.1:d:::1.1\n\
+     ;t2:d2"
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "bold_1" >:: bold_1
@@ -264,8 +347,6 @@ let () =
                   ; "space_2" >:: space_2
                   ; "link_1" >:: link_1
                   ; "link_2" >:: link_2
-                  ; "list_1" >:: list_1
-                  ; "list_2" >:: list_2
                   ; "list_3" >:: list_3
                   ; "list_4" >:: list_4
                   ; "list_5" >:: list_5
@@ -278,4 +359,13 @@ let () =
                   ; "list_mixed_4" >:: list_mixed_4
                   ; "list_mixed_5" >:: list_mixed_5
                   ; "list_mixed_warning_1" >:: list_mixed_warning_1
+                  ; "def_1" >:: def_1
+                  ; "def_2" >:: def_2
+                  ; "def_3" >:: def_3
+                  ; "def_4" >:: def_4
+                  ; "def_5" >:: def_5
+                  ; "def_6" >:: def_6
+                  ; "def_7" >:: def_7
+                  ; "def_8" >:: def_8
+                  ; "def_9" >:: def_9
                   ])
