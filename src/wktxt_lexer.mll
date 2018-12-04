@@ -3,6 +3,8 @@
 
   let debug = false
   let newline = ref true
+  let last_def_term_line = ref 0
+  let last_def_term_depth = ref 0
 
   (* Retourne soit [String str], soit [token], suivant si
     on est en début de ligne ou pas.
@@ -18,16 +20,47 @@
 
   let update_lex_new_line lexbuf ch =
     if ch = '\n' then Lexing.new_line lexbuf else ()
+
+  let get_lex_line lexbuf =
+    let pos = lexbuf.Lexing.lex_start_p in
+    pos.Lexing.pos_lnum
 }
 
 let hrule = "----"
 let bold = "'''"
 let italic = "''"
 let ws = [ ' ' '\t']
-let wordchar = [^''' '=' '*' '#' '\n' '[' ']']
+let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';']
 let linkchar = [^'[' ']']
 
 rule main = parse
+  | (':'* ';') as s ws* {
+      if !newline then begin
+        if debug then Printf.printf "DEFLIST Term\n" ;
+        newline := false ;
+        last_def_term_line := get_lex_line lexbuf ;
+        last_def_term_depth := String.length s ;
+        DEFLIST (Term, String.length s)
+      end
+      else
+        STRING s
+    }
+  | ':'+ as s ws* {
+      match s with
+      | ":" when not !newline ->
+        if get_lex_line lexbuf = !last_def_term_line then begin
+          if debug then Printf.printf "DEFLIST Description\n" ;
+          last_def_term_line := 0 ;
+          DEFLIST (Description, !last_def_term_depth)
+        end
+        else
+          STRING s
+      | _ when not !newline ->
+        STRING s
+      | _ ->
+        newline := false ;
+        DEFLIST(Description, String.length s)
+    }
   | '='+ as s ws* {
       if debug then Printf.printf "HEADER START %d\n" (String.length s) ;
       token_or_str (s, HEADER (String.length s))

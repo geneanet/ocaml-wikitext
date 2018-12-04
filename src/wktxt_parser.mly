@@ -47,6 +47,7 @@
 
 %token<int> HEADER
 %token<Wktxt_type.order*int> LIST
+%token<Wktxt_type.def_type*int> DEFLIST
 %token<string> STRING LINK EXTLINK
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
