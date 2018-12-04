@@ -43,6 +43,32 @@
       NumList (get_blocks 1 l Ordered) :: get_list (get_next_list l Ordered)
     | _ ->
       List (get_blocks 1 l Unordered) :: get_list (get_next_list l Unordered)
+
+  let rec get_next_term_list l depth =
+    match l with
+    | ((cur_type, cur_depth),_) :: tl when cur_type = Description || cur_depth > depth ->
+      get_next_term_list tl depth
+    | list -> list
+
+  (*
+    *)
+  let rec get_descriptions l depth :(block list)=
+    match l with
+    | ((cur_type, cur_depth), inlines) :: tl when cur_type = Description && cur_depth = depth ->
+      Paragraph (List.flatten inlines) :: get_descriptions tl depth
+    | ((_, cur_depth), _) :: tl when cur_depth > depth ->
+      DefList (get_def_blocks l (depth + 1)) ::
+        get_descriptions (get_pair_list_from_depth depth tl) depth
+    | _ -> []
+
+  and get_def_blocks l depth :(def_block list)=
+    match l with
+    | ((cur_type, cur_depth), inlines) :: tl when cur_type = Term && cur_depth = depth ->
+      (List.flatten inlines, get_descriptions tl depth) :: 
+        get_def_blocks (get_next_term_list tl depth) depth
+    | ((_, cur_depth), _) :: tl when cur_depth >= depth ->
+      ([], get_descriptions l depth) :: get_def_blocks (get_next_term_list tl depth) depth
+    | _ -> []
 %}
 
 %token<int> HEADER
@@ -67,6 +93,9 @@ block:
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
       get_list l
+    }
+  | l = pair(DEFLIST, inline(regular)+)+ EMPTYLINE* {
+      [DefList (get_def_blocks l 1)]
     }
   | HRULE EMPTYLINE* {
       [ Hrule ]
