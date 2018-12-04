@@ -16,7 +16,7 @@
       STRING str
     end
 
-  let update_new_line lexbuf ch =
+  let update_lex_new_line lexbuf ch =
     if ch = '\n' then Lexing.new_line lexbuf else ()
 }
 
@@ -63,12 +63,12 @@ rule main = parse
     }
   | "[[" (linkchar+ as s) "]]" {
       if debug then Printf.printf "LINK : %s\n" s ;
-      String.iter (update_new_line lexbuf) s;
+      String.iter (update_lex_new_line lexbuf) s;
       LINK s
     }
   | "[" (linkchar+ as s) "]" {
       if debug then Printf.printf "EXTLINK : %s\n" s ;
-      String.iter (update_new_line lexbuf) s;
+      String.iter (update_lex_new_line lexbuf) s;
       EXTLINK s
     }
   | wordchar+ as s {
