@@ -1,5 +1,7 @@
 type order = Ordered | Unordered
 
+type def_type = Term | Description
+
 type document = block list
 [@@deriving show { with_path = false }]
 
@@ -13,6 +15,9 @@ and block =
   | Hrule
 [@@deriving show { with_path = false }]
 
+and def_block = inline list * block list
+[@@deriving show { with_path = false }]
+
 and inline =
   | Bold of inline list
   | Italic of inline list
@@ -24,9 +29,6 @@ and inline =
 and table_block =
   | TableHead of inline list
   | TableItem of inline list
-[@@deriving show { with_path = false }]
-
-and def_block = inline list * block list
 [@@deriving show { with_path = false }]
 
 (* [@@deriving show] va créer automatique les fonctions
