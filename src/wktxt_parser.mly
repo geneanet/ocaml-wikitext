@@ -50,8 +50,6 @@
       get_next_term_list tl depth
     | list -> list
 
-  (*
-    *)
   let rec get_descriptions l depth :(block list)=
     match l with
     | ((cur_type, cur_depth), inlines) :: tl when cur_type = Description && cur_depth = depth ->

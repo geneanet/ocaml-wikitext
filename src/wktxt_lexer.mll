@@ -34,7 +34,7 @@ let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';']
 let linkchar = [^'[' ']']
 
 rule main = parse
-  | (':'* ';') as s ws* {
+  | ws* (':'* ';') as s ws* {
       if !newline then begin
         if debug then Printf.printf "DEFLIST Term\n" ;
         newline := false ;
@@ -45,7 +45,7 @@ rule main = parse
       else
         STRING s
     }
-  | ':'+ as s ws* {
+  | ws* ':'+ as s ws* {
       match s with
       | ":" when not !newline ->
         if get_lex_line lexbuf = !last_def_term_line then begin
@@ -61,23 +61,23 @@ rule main = parse
         newline := false ;
         DEFLIST(Description, String.length s)
     }
-  | '='+ as s ws* {
+  | ws* '='+ as s ws* {
       if debug then Printf.printf "HEADER START %d\n" (String.length s) ;
       token_or_str (s, HEADER (String.length s))
     }
-  | '*'+ as s ws*{ 
+  | ws* '*'+ as s ws*{ 
       if debug then Printf.printf "LIST %d\n" (String.length s) ;
       token_or_str (s, LIST (Unordered, String.length s))
     }
-  | '#'+ as s ws*{ 
+  | ws* '#'+ as s ws*{ 
       if debug then Printf.printf "NUMLIST %d\n" (String.length s);
       token_or_str (s, LIST (Ordered, String.length s))
     }
-  | hrule as s ws*{
+  | ws* hrule as s ws*{
       if debug then Printf.printf "HRULE\n" ;
       token_or_str (s, HRULE )
     }
-  | '='+ as s '\n' {
+  | ws* '='+ as s '\n' {
       if debug then Printf.printf "HEADER END %d \n" (String.length s) ;
       Lexing.new_line lexbuf ;
       newline := true ;
