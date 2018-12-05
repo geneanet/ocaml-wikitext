@@ -332,6 +332,74 @@ let def_9 _ctx =
      :;t1.1:d:::1.1\n\
      ;t2:d2"
 
+let table_1 _ctx =
+  assert_equal
+    [ Table ([String "Titre" ; String "\n"], [  [ TableItem []
+                                                ; TableHead [String "Titre A" ; String "\n"]
+                                                ; TableHead [String "Titre B" ; String "\n"]
+                                                ; TableHead [String "Titre C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 1" ; String "\n"]
+                                                ; TableItem [String "Data 1A" ; String "\n"]
+                                                ; TableItem [String "Data 1B" ; String "\n"]
+                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 2" ; String "\n"]
+                                                ; TableItem [String "Data 1A" ; String "\n"]
+                                                ; TableItem [String "Data 1B" ; String "\n"]
+                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ]
+                                             ])
+    ]
+    "{|\n\
+      |-\n\
+      |\n\
+      ! Titre A\n\
+      ! Titre B\n\
+      ! Titre C\n\
+      |-\n\
+      ! Titre 1\n\
+      | Data 1A\n\
+      | Data 1B\n\
+      | Data 1C\n\
+      |-\n\
+      ! Titre 2\n\
+      | Data 2A\n\
+      | Data 2B\n\
+      | Data 2C\n\
+      |}"
+
+let table_2 _ctx =
+  assert_equal
+    [ Table ([String "Titre" ; String "\n"], [  [ TableItem []
+                                                ; TableHead [String "Titre A" ; String "\n"]
+                                                ; TableHead [String "Titre B" ; String "\n"]
+                                                ; TableHead [String "Titre C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 1" ; String "\n"]
+                                                ; TableItem [String "Data 1A" ; String "\n"]
+                                                ; TableItem [String "Data 1B" ; String "\n"]
+                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 2" ; String "\n"]
+                                                ; TableItem [String "Data 1A" ; String "\n"]
+                                                ; TableItem [String "Data 1B" ; String "\n"]
+                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ]
+                                             ])
+    ]
+    "{|\n\
+      |+ Titre\n\
+      |----\n\
+      ! !! Titre col. A !! Titre col. B !! Titre col. C\n\
+      |----\n\
+      ! Titre ligne 1\n\
+      | Data 1A || Data 1B || Data 1C\n\
+      |----\n\
+      ! Titre ligne 2\n\
+      | Data 2A || Data 2B || Data 2C\n\
+      |}"
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "bold_1" >:: bold_1
@@ -368,4 +436,8 @@ let () =
                   ; "def_7" >:: def_7
                   ; "def_8" >:: def_8
                   ; "def_9" >:: def_9
+                  (*
+                  ; "table_1" >:: table_1
+                  ; "table_2" >:: table_2
+                  *)
                   ])
