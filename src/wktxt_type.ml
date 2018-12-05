@@ -11,7 +11,7 @@ and block =
   | List of block list list
   | NumList of block list list
   | DefList of def_block list
-  | Table of table_block list list
+  | Table of inline list * table_block list list
   | Hrule
 [@@deriving show { with_path = false }]
 
