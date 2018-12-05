@@ -26,7 +26,7 @@
     pos.Lexing.pos_lnum
 }
 
-let hrule = "----"
+let hrule = "----" ['-']*
 let bold = "'''"
 let italic = "''"
 let ws = [ ' ' '\t']
