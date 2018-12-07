@@ -14,7 +14,23 @@
       newline := false ;
       token
     end
+    else
+      STRING str
+
+  let str_or_token (str, token) =
+    if !newline then begin
+      newline := false ;
+      STRING str
+    end
+    else
+      token
+
+  let newline_token_or_str str token lexbuf =
+    Lexing.new_line lexbuf ;
+    if !newline then
+      token
     else begin
+      newline := true ;
       STRING str
     end
 
@@ -51,50 +67,20 @@ rule main = parse
       token_or_str (s, TABLE_TITLE)
     }
   | ws* table_start as s ws* '\n' {
-      Lexing.new_line lexbuf ;
-      if !newline then begin
-        if debug then Printf.printf "TABLE_START\n" ;
-        TABLE_START
-      end
-      else begin
-        newline := true ;
-        STRING s
-      end
+     newline_token_or_str s TABLE_START lexbuf
     }
   | ws* table_end as s ws* {
       if debug && !newline then Printf.printf "TABLE_END\n" ;
       token_or_str (s, TABLE_END)
     }
   | ws* table_new_line as s ws* '\n' {
-      Lexing.new_line lexbuf ;
-      if !newline then begin
-        if debug then Printf.printf "TABLE_NEW_LINE\n" ;
-        TABLE_NEW_LINE
-      end
-      else begin
-        newline := true ;
-        STRING s
-      end
+     newline_token_or_str s TABLE_NEW_LINE lexbuf
     }
   | ws* cell_inline as s ws* {
-      if !newline then begin
-        newline := false ;
-        STRING s
-      end
-      else begin
-        if debug then Printf.printf "TABLE_CELL Cell\n" ;
-        TABLE_CELL TableCell
-      end
+      str_or_token (s, TABLE_CELL TableCell)
     }
   | ws* header_cell_inline as s ws* {
-      if !newline then begin
-        newline := false ;
-        STRING s
-      end
-      else begin
-        if debug then Printf.printf "TABLE_CELL Header\n" ;
-        TABLE_CELL TableHeader
-      end
+      str_or_token (s, TABLE_CELL TableHeader)
     }
   | ws* cell as s ws* {
       if debug && !newline then Printf.printf "TABLE_CELL Cell\n" ;
@@ -153,16 +139,8 @@ rule main = parse
       newline := true ;
       HEADER (String.length s)
     }
-  | ws*'\n' {
-      Lexing.new_line lexbuf ;
-      if !newline then begin
-        if debug then Printf.printf "EMPTYLINE\n" ;
-        EMPTYLINE
-      end
-      else begin
-        newline := true ;
-        STRING "\n"
-      end
+  | ws* '\n' as s {
+     newline_token_or_str s EMPTYLINE lexbuf
     }
   | "[[" (linkchar+ as s) "]]" {
       newline := false;
