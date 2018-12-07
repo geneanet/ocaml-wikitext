@@ -95,11 +95,13 @@ rule main = parse
       end
     }
   | "[[" (linkchar+ as s) "]]" {
+      newline := false;
       if debug then Printf.printf "LINK : %s\n" s ;
       String.iter (update_lex_new_line lexbuf) s;
       LINK s
     }
   | "[" (linkchar+ as s) "]" {
+      newline := false;
       if debug then Printf.printf "EXTLINK : %s\n" s ;
       String.iter (update_lex_new_line lexbuf) s;
       EXTLINK s
@@ -110,14 +112,17 @@ rule main = parse
       STRING s
     }
   | italic {
+      newline := false;
       if debug then Printf.printf "ITALIC\n" ;
       ITALIC 
     }
   | bold {
+      newline := false;
       if debug then Printf.printf "BOLD\n" ;
       BOLD
     }
   | bold italic {
+      newline := false;
       if debug then Printf.printf "BOLDITALIC\n" ;
       BOLDITALIC
     }
