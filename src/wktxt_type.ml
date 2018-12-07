@@ -2,6 +2,8 @@ type order = Ordered | Unordered
 
 type def_type = Term | Description
 
+type table_cell = TableCell | TableHeader
+
 type document = block list
 [@@deriving show { with_path = false }]
 
