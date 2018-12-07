@@ -253,11 +253,9 @@ let list_mixed_warning_1 _ctx = (* a warning should be written on STDERR for thi
 
 let def_1 _ctx =
   assert_equal
-    [ DefList [ ([String "t1"], [
-                  Paragraph [ String "d1" ]
-                  ])
+    [ DefList [ ([String "t1" ; String ":" ; String "term"], [])
               ] ]
-    ";t1:d1"
+    ";t1:term"
 
 let def_2 _ctx =
   assert_equal
@@ -293,44 +291,23 @@ let def_5 _ctx =
 
 let def_6 _ctx =
   assert_equal
-    [ DefList [ ([String "t1"], [ Paragraph [ String "d1" ; String "\n" ]])
-                ; ([String "t2"], [ Paragraph [ String "d2" ]])]
+    [ DefList [ ([String "t1" ; String ":" ; String "d1" ; String "\n"], [ Paragraph [ String "d2" ]])]
     ]
     ";t1:d1\n\
-     ;t2:d2"
+     :d2"
 
 let def_7 _ctx =
   assert_equal
-    [ DefList [ ([String "t1"], [ Paragraph [ String "d1" ; String "\n" ]
-                                  ; DefList [ ([String "t1.1"], [ Paragraph [ String "d1.1" 
-                                                                            ; String "\n" ]])]
-                                  ])
-                ; ([String "t2"], [ Paragraph [ String "d2" ] ])
+    [ DefList [ ([String "tt" ; String ":" ; String "2" ; String "\n"], [
+                DefList [ ( [String "t1" ; String ":" ; String "1" ; String "\n"],
+                            [ Paragraph [ String "dd" ; String ":" ; String "d1.1" ]])
+                        ]]
+                )
               ]
     ]
-    ";t1:d1\n\
-     :;t1.1:d1.1\n\
-     ;t2:d2"
-
-let def_8 _ctx =
-  assert_equal
-    [DefList [ ([] , [DefList [ ([String "t1"], [Paragraph [ String "d1" ]])]])]]
-    ":;t1:d1"
-
-let def_9 _ctx =
-  assert_equal
-    [ DefList [ ([String "t1"], [ Paragraph [ String "d1" ; String "\n" ]
-                                  ; DefList [ ([String "t1.1"], [ Paragraph [ String "d"
-                                                                            ; String ":::"
-                                                                            ; String "1.1" 
-                                                                            ; String "\n" ]])]
-                                  ])
-                ; ([String "t2"], [ Paragraph [ String "d2" ] ])
-              ]
-    ]
-    ";t1:d1\n\
-     :;t1.1:d:::1.1\n\
-     ;t2:d2"
+    ";tt:2\n\
+     :;t1:1\n\
+     ::dd:d1.1"
 
 let table_empty_cell_1 _ctx =
   assert_equal
@@ -466,8 +443,6 @@ let () =
                   ; "def_5" >:: def_5
                   ; "def_6" >:: def_6
                   ; "def_7" >:: def_7
-                  ; "def_8" >:: def_8
-                  ; "def_9" >:: def_9
                   ; "table_empty_cell_1" >:: table_empty_cell_1
                   ; "table_empty_cell_2" >:: table_empty_cell_2
                   ; "table_no_title" >:: table_no_title
