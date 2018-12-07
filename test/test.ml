@@ -334,7 +334,7 @@ let def_9 _ctx =
 
 let table_1 _ctx =
   assert_equal
-    [ Table ([String "Titre" ; String "\n"], [  [ TableItem []
+    [ Table ([String "Titre" ; String "\n"], [  [ TableItem [String "\n"]
                                                 ; TableHead [String "Titre A" ; String "\n"]
                                                 ; TableHead [String "Titre B" ; String "\n"]
                                                 ; TableHead [String "Titre C" ; String "\n"]
@@ -345,13 +345,14 @@ let table_1 _ctx =
                                                 ; TableItem [String "Data 1C" ; String "\n"]
                                                 ]
                                               ; [ TableHead [String "Titre 2" ; String "\n"]
-                                                ; TableItem [String "Data 1A" ; String "\n"]
-                                                ; TableItem [String "Data 1B" ; String "\n"]
-                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ; TableItem [String "Data 2A" ; String "\n"]
+                                                ; TableItem [String "Data 2B" ; String "\n"]
+                                                ; TableItem [String "Data 2C" ; String "\n"]
                                                 ]
                                              ])
     ]
     "{|\n\
+      |+ Titre\n\
       |-\n\
       |\n\
       ! Titre A\n\
@@ -372,31 +373,31 @@ let table_1 _ctx =
 let table_2 _ctx =
   assert_equal
     [ Table ([String "Titre" ; String "\n"], [  [ TableItem []
-                                                ; TableHead [String "Titre A" ; String "\n"]
-                                                ; TableHead [String "Titre B" ; String "\n"]
+                                                ; TableHead [String "Titre A "]
+                                                ; TableHead [String "Titre B "]
                                                 ; TableHead [String "Titre C" ; String "\n"]
                                                 ]
                                               ; [ TableHead [String "Titre 1" ; String "\n"]
-                                                ; TableItem [String "Data 1A" ; String "\n"]
-                                                ; TableItem [String "Data 1B" ; String "\n"]
+                                                ; TableItem [String "Data 1A "]
+                                                ; TableItem [String "Data 1B "]
                                                 ; TableItem [String "Data 1C" ; String "\n"]
                                                 ]
                                               ; [ TableHead [String "Titre 2" ; String "\n"]
-                                                ; TableItem [String "Data 1A" ; String "\n"]
-                                                ; TableItem [String "Data 1B" ; String "\n"]
-                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ; TableItem [String "Data 2A "]
+                                                ; TableItem [String "Data 2B "]
+                                                ; TableItem [String "Data 2C" ; String "\n"]
                                                 ]
                                              ])
     ]
     "{|\n\
       |+ Titre\n\
       |----\n\
-      ! !! Titre col. A !! Titre col. B !! Titre col. C\n\
+      | !! Titre A !! Titre B !! Titre C\n\
       |----\n\
-      ! Titre ligne 1\n\
+      ! Titre 1\n\
       | Data 1A || Data 1B || Data 1C\n\
       |----\n\
-      ! Titre ligne 2\n\
+      ! Titre 2\n\
       | Data 2A || Data 2B || Data 2C\n\
       |}"
 
@@ -436,8 +437,6 @@ let () =
                   ; "def_7" >:: def_7
                   ; "def_8" >:: def_8
                   ; "def_9" >:: def_9
-                  (*
                   ; "table_1" >:: table_1
                   ; "table_2" >:: table_2
-                  *)
                   ])
