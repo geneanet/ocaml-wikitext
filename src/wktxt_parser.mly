@@ -67,6 +67,13 @@
     | ((_, cur_depth), _) :: tl when cur_depth >= depth ->
       ([], get_descriptions l depth) :: get_def_blocks (get_next_term_list tl depth) depth
     | _ -> []
+
+    
+  let rec get_table_line line :(table_block list)=
+    match line with
+    | (cell_type, inlines) :: tl when cell_type = TableHeader -> TableHead (List.flatten inlines) :: get_table_line tl
+    | (_, inlines) :: tl -> TableItem (List.flatten inlines) :: get_table_line tl
+    | _ -> []
 %}
 
 %token<int> HEADER
@@ -91,6 +98,11 @@ block:
   | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* { 
       [ Header (h1, (List.flatten i)) ]
     }
+  | TABLE_START title = preceded(TABLE_TITLE, inline(regular)+)? lines = table_line* TABLE_END {
+      match title with
+      | None -> [ Table ([], lines) ]
+      | Some title -> [ Table (List.flatten title, lines) ]
+    }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
       get_list l
     }
@@ -104,6 +116,11 @@ block:
       [ Paragraph (List.flatten i) ]
     }
 ;
+
+table_line:
+  | TABLE_NEW_LINE l = pair(TABLE_CELL, inline(regular)*)* {
+      get_table_line l
+    }
 
 (* inlines *)
 
