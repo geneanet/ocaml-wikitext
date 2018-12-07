@@ -91,31 +91,10 @@ rule main = parse
       token_or_str (s, TABLE_CELL(TableHeader))
     }
   | ws* (':'* ';') as s ws* {
-      if !newline then begin
-        if debug then Printf.printf "DEFLIST Term\n" ;
-        newline := false ;
-        last_def_term_line := get_lex_line lexbuf ;
-        last_def_term_depth := String.length s ;
-        DEFLIST (Term, String.length s)
-      end
-      else
-        STRING s
+      token_or_str (s, DEFLIST(Term, String.length s))
     }
   | ws* ':'+ as s ws* {
-      match s with
-      | ":" when not !newline ->
-        if get_lex_line lexbuf = !last_def_term_line then begin
-          if debug then Printf.printf "DEFLIST Description\n" ;
-          last_def_term_line := 0 ;
-          DEFLIST (Description, !last_def_term_depth)
-        end
-        else
-          STRING s
-      | _ when not !newline ->
-        STRING s
-      | _ ->
-        newline := false ;
-        DEFLIST(Description, String.length s)
+      token_or_str (s, DEFLIST(Description, String.length s))
     }
   | ws* '='+ as s ws* {
       if debug then Printf.printf "HEADER START %d\n" (String.length s) ;
