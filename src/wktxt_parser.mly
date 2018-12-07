@@ -75,6 +75,8 @@
 %token<string> STRING LINK EXTLINK
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
+%token TABLE_START TABLE_END TABLE_TITLE TABLE_NEW_LINE
+%token<Wktxt_type.table_cell> TABLE_CELL
 
 %start document
 %type <Wktxt_type.document> document

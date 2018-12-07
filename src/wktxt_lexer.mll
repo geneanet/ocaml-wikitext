@@ -30,10 +30,80 @@ let hrule = "----" ['-']*
 let bold = "'''"
 let italic = "''"
 let ws = [ ' ' '\t']
-let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';']
+let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';' '|' '!' '{' '}']
 let linkchar = [^'[' ']']
 
+let table_start = "{|"
+let table_end = "|}"
+let table_title = "|+"
+let table_new_line = "|-" ['-']*
+let cell_inline = "||"
+let header_cell_inline = "!!"
+let cell = "|"
+let header_cell = "!"
+
+(*
+  When editing these lexing rules, do not forget to use and update the newline reference.
+*)
 rule main = parse
+  | ws* table_title as s ws* {
+      if debug && !newline then Printf.printf "TABLE_TITLE\n" ;
+      token_or_str (s, TABLE_TITLE)
+    }
+  | ws* table_start as s ws* '\n' {
+      Lexing.new_line lexbuf ;
+      if !newline then begin
+        if debug then Printf.printf "TABLE_START\n" ;
+        TABLE_START
+      end
+      else begin
+        newline := true ;
+        STRING s
+      end
+    }
+  | ws* table_end as s ws* {
+      if debug && !newline then Printf.printf "TABLE_END\n" ;
+      token_or_str (s, TABLE_END)
+    }
+  | ws* table_new_line as s ws* '\n' {
+      Lexing.new_line lexbuf ;
+      if !newline then begin
+        if debug then Printf.printf "TABLE_NEW_LINE\n" ;
+        TABLE_NEW_LINE
+      end
+      else begin
+        newline := true ;
+        STRING s
+      end
+    }
+  | ws* cell_inline as s ws* {
+      if !newline then begin
+        newline := false ;
+        STRING s
+      end
+      else begin
+        if debug then Printf.printf "TABLE_CELL Cell\n" ;
+        TABLE_CELL TableCell
+      end
+    }
+  | ws* header_cell_inline as s ws* {
+      if !newline then begin
+        newline := false ;
+        STRING s
+      end
+      else begin
+        if debug then Printf.printf "TABLE_CELL Header\n" ;
+        TABLE_CELL TableHeader
+      end
+    }
+  | ws* cell as s ws* {
+      if debug && !newline then Printf.printf "TABLE_CELL Cell\n" ;
+      token_or_str (s, TABLE_CELL(TableCell))
+    }
+  | ws* header_cell as s ws* {
+      if debug && !newline then Printf.printf "TABLE_CELL Header\n" ;
+      token_or_str (s, TABLE_CELL(TableHeader))
+    }
   | ws* (':'* ';') as s ws* {
       if !newline then begin
         if debug then Printf.printf "DEFLIST Term\n" ;
