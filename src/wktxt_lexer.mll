@@ -5,6 +5,7 @@
   let newline = ref true
   let last_def_term_line = ref 0
   let last_def_term_depth = ref 0
+  let in_table = ref false
 
   (* Retourne soit [String str], soit [token], suivant si
     on est en début de ligne ou pas.
@@ -25,7 +26,7 @@
     else
       token
 
-  let newline_token_or_str str token lexbuf =
+  let newline_token_or_str (str, token) lexbuf =
     Lexing.new_line lexbuf ;
     if !newline then
       token
@@ -33,6 +34,18 @@
       newline := true ;
       STRING str
     end
+
+  let table_or_str (str, token) =
+    match token with
+    | TABLE_START ->
+      in_table := true ;
+      token
+    | TABLE_END when !in_table ->
+      in_table := false;
+      token
+    | _ when !in_table ->
+      token
+    | _ -> STRING str
 
   let update_lex_new_line lexbuf ch =
     if ch = '\n' then Lexing.new_line lexbuf else ()
@@ -62,33 +75,33 @@ let header_cell = "!"
   When editing these lexing rules, do not forget to use and update the newline reference.
 *)
 rule main = parse
-  | ws* table_title as s ws* {
+  | (ws* table_title ws*) as s {
       if debug && !newline then Printf.printf "TABLE_TITLE\n" ;
-      token_or_str (s, TABLE_TITLE)
+      let tok = token_or_str (s, TABLE_TITLE) in table_or_str (s, tok)
     }
-  | ws* table_start as s ws* '\n' {
-     newline_token_or_str s TABLE_START lexbuf
+  | (ws* table_start ws*) as s '\n' {
+      let tok = newline_token_or_str (s, TABLE_START) lexbuf in table_or_str (s, tok)
     }
-  | ws* table_end as s ws* {
+  | (ws* table_end ws*) as s {
       if debug && !newline then Printf.printf "TABLE_END\n" ;
-      token_or_str (s, TABLE_END)
+      let tok = token_or_str (s, TABLE_END) in table_or_str (s, tok)
     }
-  | ws* table_new_line as s ws* '\n' {
-     newline_token_or_str s TABLE_NEW_LINE lexbuf
+  | (ws* table_new_line ws*) as s '\n' {
+      let tok = newline_token_or_str (s, TABLE_NEW_LINE) lexbuf in table_or_str (s, tok)
     }
-  | ws* cell_inline as s ws* {
-      str_or_token (s, TABLE_CELL TableCell)
+  | (ws* cell_inline ws*) as s {
+      let tok = str_or_token (s, TABLE_CELL TableCell) in table_or_str (s, tok)
     }
-  | ws* header_cell_inline as s ws* {
-      str_or_token (s, TABLE_CELL TableHeader)
+  | (ws* header_cell_inline ws*) as s {
+      let tok = str_or_token (s, TABLE_CELL TableHeader) in table_or_str (s, tok)
     }
-  | ws* cell as s ws* {
+  | (ws* cell ws*) as s {
       if debug && !newline then Printf.printf "TABLE_CELL Cell\n" ;
-      token_or_str (s, TABLE_CELL(TableCell))
+      let tok = token_or_str (s, TABLE_CELL TableCell) in table_or_str (s, tok)
     }
-  | ws* header_cell as s ws* {
+  | (ws* header_cell ws*) as s {
       if debug && !newline then Printf.printf "TABLE_CELL Header\n" ;
-      token_or_str (s, TABLE_CELL(TableHeader))
+      let tok = token_or_str (s, TABLE_CELL TableHeader) in table_or_str (s, tok)
     }
   | ws* (':'* ';') as s ws* {
       token_or_str (s, DEFLIST(Term, String.length s))
@@ -119,7 +132,7 @@ rule main = parse
       HEADER (String.length s)
     }
   | ws* '\n' as s {
-     newline_token_or_str s EMPTYLINE lexbuf
+     newline_token_or_str (s, EMPTYLINE) lexbuf
     }
   | "[[" (linkchar+ as s) "]]" {
       newline := false;

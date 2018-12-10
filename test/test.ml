@@ -412,8 +412,8 @@ let table_no_title _ctx =
 let special_chars _ctx =
   assert_equal
     [ Paragraph [ String "Lorem "
-                ; String "||"
-                ; String " ipsum"
+                ; String "|| "
+                ; String "ipsum"
                 ]
     ]
     "Lorem || ipsum"
