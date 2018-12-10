@@ -409,7 +409,7 @@ let table_no_title _ctx =
       | Data 2A || Data 2B !! Data 2C\n\
       |}"
 
-let special_chars _ctx =
+let special_chars1 _ctx =
   assert_equal
     [ Paragraph [ String "Lorem "
                 ; String "|| "
@@ -417,6 +417,24 @@ let special_chars _ctx =
                 ]
     ]
     "Lorem || ipsum"
+
+let special_chars2 _ctx =
+  assert_equal
+    [ Paragraph [String "Lorem " ; String ": " ; String "ipsum"]
+    ]
+    "Lorem : ipsum"
+
+let special_chars3 _ctx =
+  assert_equal
+    [ Paragraph [String "Lorem " ; String "!! " ; String "ipsum"]
+    ]
+    "Lorem !! ipsum"
+
+let special_chars4 _ctx =
+  assert_equal
+    [ Paragraph [String "Lorem " ; String "== " ; String "ipsum"]
+    ]
+    "Lorem == ipsum"
 
 let () =
   run_test_tt_main
@@ -455,5 +473,8 @@ let () =
                   ; "table_empty_cell_1" >:: table_empty_cell_1
                   ; "table_empty_cell_2" >:: table_empty_cell_2
                   ; "table_no_title" >:: table_no_title
-                  ; "special_chars" >:: special_chars
+                  ; "special_chars1" >:: special_chars1
+                  ; "special_chars2" >:: special_chars2
+                  ; "special_chars3" >:: special_chars3
+                  ; "special_chars4" >:: special_chars4
                   ])
