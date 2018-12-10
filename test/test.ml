@@ -409,6 +409,15 @@ let table_no_title _ctx =
       | Data 2A || Data 2B !! Data 2C\n\
       |}"
 
+let special_chars _ctx =
+  assert_equal
+    [ Paragraph [ String "Lorem "
+                ; String "||"
+                ; String " ipsum"
+                ]
+    ]
+    "Lorem || ipsum"
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "bold_1" >:: bold_1
@@ -446,4 +455,5 @@ let () =
                   ; "table_empty_cell_1" >:: table_empty_cell_1
                   ; "table_empty_cell_2" >:: table_empty_cell_2
                   ; "table_no_title" >:: table_no_title
+                  ; "special_chars" >:: special_chars
                   ])
