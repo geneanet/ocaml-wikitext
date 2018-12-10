@@ -103,29 +103,29 @@ rule main = parse
       if debug && !newline then Printf.printf "TABLE_CELL Header\n" ;
       let tok = token_or_str (s, TABLE_CELL TableHeader) in table_or_str (s, tok)
     }
-  | ws* (':'* ';') as s ws* {
-      token_or_str (s, DEFLIST(Term, String.length s))
+  | (ws* (':'* ';') as s1 ws*) as s2 {
+      token_or_str (s2, DEFLIST (Term, String.length s1))
     }
-  | ws* ':'+ as s ws* {
-      token_or_str (s, DEFLIST(Description, String.length s))
+  | (ws* ':'+ as s1 ws*) as s2 {
+      token_or_str (s2, DEFLIST (Description, String.length s1))
     }
-  | ws* '='+ as s ws* {
-      if debug then Printf.printf "HEADER START %d\n" (String.length s) ;
-      token_or_str (s, HEADER (String.length s))
+  | (ws* '='+ as s1 ws*) as s2 {
+      if debug then Printf.printf "HEADER START %d\n" (String.length s1) ;
+      token_or_str (s2, HEADER (String.length s1))
     }
-  | ws* '*'+ as s ws*{ 
-      if debug then Printf.printf "LIST %d\n" (String.length s) ;
-      token_or_str (s, LIST (Unordered, String.length s))
+  | (ws* '*'+ as s1 ws*) as s2 {
+      if debug then Printf.printf "LIST %d\n" (String.length s1) ;
+      token_or_str (s2, LIST (Unordered, String.length s1))
     }
-  | ws* '#'+ as s ws*{ 
-      if debug then Printf.printf "NUMLIST %d\n" (String.length s);
-      token_or_str (s, LIST (Ordered, String.length s))
+  | (ws* '#'+ as s1 ws*) as s2 {
+      if debug then Printf.printf "NUMLIST %d\n" (String.length s1);
+      token_or_str (s2, LIST (Ordered, String.length s1))
     }
-  | ws* hrule as s ws*{
+  | (ws* hrule ws*) as s {
       if debug then Printf.printf "HRULE\n" ;
       token_or_str (s, HRULE )
     }
-  | ws* '='+ as s '\n' {
+  | ws* '='+ as s ws* '\n' {
       if debug then Printf.printf "HEADER END %d \n" (String.length s) ;
       Lexing.new_line lexbuf ;
       newline := true ;
