@@ -182,6 +182,14 @@ let list_8 _ctx =
     "* 1\n\
      *** 1.1.1\n\
      ** 1.2"
+
+let list_9 _ctx =
+  assert_equal
+    [ List [ [ List [[Paragraph [ String "1" ; String "\n"]
+              ; List [[Paragraph [String "2"]] ]]]]]
+    ]
+    "** 1\n\
+     *** 2"
   
 let list_mixed_1 _ctx =
   assert_equal
@@ -457,6 +465,7 @@ let () =
                   ; "list_6" >:: list_6
                   ; "list_7" >:: list_7
                   ; "list_8" >:: list_8
+                  ; "list_9" >:: list_9
                   ; "list_mixed_1" >:: list_mixed_1
                   ; "list_mixed_2" >:: list_mixed_2
                   ; "list_mixed_3" >:: list_mixed_3
