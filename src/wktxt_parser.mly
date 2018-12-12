@@ -31,7 +31,7 @@
       [NumList (get_blocks (depth + 1) pair_list Ordered)] :: get_blocks depth tl prev_type
     | _ -> []
   
-  let rec get_list l =
+  let rec parse_list l =
     let rec get_next_list l list_type =
       match l with
       | [] -> []
@@ -40,9 +40,9 @@
     in match l with
     | [] -> []
     | ((next_type, _), _) :: _ when next_type = Ordered ->
-      NumList (get_blocks 1 l Ordered) :: get_list (get_next_list l Ordered)
+      NumList (get_blocks 1 l Ordered) :: parse_list (get_next_list l Ordered)
     | _ ->
-      List (get_blocks 1 l Unordered) :: get_list (get_next_list l Unordered)
+      List (get_blocks 1 l Unordered) :: parse_list (get_next_list l Unordered)
 
   let rec get_next_term_list l depth =
     match l with
@@ -104,7 +104,7 @@ block:
       | Some title -> [ Table (List.flatten title, lines) ]
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
-      get_list l
+      parse_list l
     }
   | l = pair(DEFLIST, inline(regular)+)+ EMPTYLINE* {
       [DefList (get_def_blocks l 1)]
