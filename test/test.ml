@@ -186,7 +186,7 @@ let list_8 _ctx =
 let list_9 _ctx =
   assert_equal
     [ List [ [ List [[Paragraph [ String "1" ; String "\n"]
-              ; List [[Paragraph [String "2"]] ]]]]]
+              ; List [[Paragraph [String "2"] ]] ]]]]
     ]
     "** 1\n\
      *** 2"
