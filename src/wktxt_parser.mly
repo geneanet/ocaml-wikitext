@@ -31,7 +31,9 @@ block:
       | Some title -> [ Table (List.flatten title, lines) ]
     }
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
-      parse_list l
+      match l with
+      | [] -> []
+      | ((list_type, _), _) :: _ -> List.flatten (parse_list 0 l list_type)
     }
   | l = pair(DEFLIST, inline(regular)+)+ EMPTYLINE* {
       [DefList (get_def_blocks l 1)]

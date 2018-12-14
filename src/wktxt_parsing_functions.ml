@@ -6,42 +6,37 @@ let rec get_pair_list_from_depth depth pair_list =
   | ((_, d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
   | list -> list
 
-let rec get_blocks depth pair_list prev_type = (* -> block list list *)
-  match pair_list with
-  | ((cur_type, next_depth), _) :: _ when depth = next_depth && depth = 1 && cur_type <> prev_type ->
+
+let rec parse_list depth pair_list list_type :(block list list)=
+  let build_list l_type l_content =
+    if l_type = Unordered then List l_content
+    else NumList l_content
+  in match pair_list with
+  | ((cur_type, next_depth), _) :: _ when next_depth = 1 && cur_type <> list_type && depth <> 0 ->
     []
-  | ((cur_type, next_depth), inlines) :: tl when depth = next_depth ->
-    if cur_type <> prev_type then
+  | ((cur_type, next_depth), inlines) :: tl1 when depth = next_depth ->
+    if cur_type <> list_type then
       prerr_string "Warning : Two list items of different type have been declared on the same level.\n"
       ;
-    begin match tl with
-      | ((next_type, d'), _) :: _ when next_depth < d' && next_type = Unordered ->
-          [Paragraph (List.flatten inlines) ; List (get_blocks (depth + 1) tl Unordered )] ::
-            get_blocks depth (get_pair_list_from_depth depth tl) prev_type
-      | ((next_type, d'), _) :: _ when next_depth < d' && next_type = Ordered ->
-          [Paragraph (List.flatten inlines) ; NumList (get_blocks (depth + 1) tl Ordered )] ::
-            get_blocks depth (get_pair_list_from_depth depth tl) prev_type
+    begin match tl1 with
+      | ((next_type, d'), _) :: tl2 when next_depth < d' ->
+        [Paragraph (List.flatten inlines) ; build_list next_type (parse_list (depth + 1) tl1 next_type )] 
+          :: parse_list depth (get_pair_list_from_depth depth tl2) list_type
       | _ ->
-        [Paragraph (List.flatten inlines)] :: get_blocks depth tl prev_type
+        [Paragraph (List.flatten inlines)]
+          :: parse_list depth (get_pair_list_from_depth depth tl1) list_type
     end
-  | ((next_type, next_depth), _) :: tl when depth < next_depth && next_type = Unordered ->
-    [List (get_blocks (depth + 1) pair_list Unordered)] :: get_blocks depth tl prev_type
-  | ((next_type, next_depth), _) :: tl when depth < next_depth && next_type = Ordered ->
-    [NumList (get_blocks (depth + 1) pair_list Ordered)] :: get_blocks depth tl prev_type
+  | ((next_type, _), _) :: tl when depth = 0 ->
+    let rec get_next_list l_type l =
+      match l with
+      | ((n_type, l_depth), _) :: tl when n_type = next_type || l_depth > 1 -> get_next_list l_type tl
+      | list -> list
+    in [build_list next_type (parse_list (depth + 1) pair_list next_type)]
+      :: parse_list depth (get_next_list next_type tl) next_type
+  | ((next_type, next_depth), _) :: tl when depth < next_depth ->
+    [build_list next_type (parse_list (depth + 1) pair_list next_type)]
+      :: parse_list depth (get_pair_list_from_depth depth tl) list_type
   | _ -> []
-
-let rec parse_list l =
-  let rec get_next_list l list_type =
-    match l with
-    | [] -> []
-    | ((next_type, next_depth), _) :: _ when next_type <> list_type && next_depth = 1 -> l
-    | _ :: tl -> get_next_list tl list_type
-  in match l with
-  | [] -> []
-  | ((next_type, _), _) :: _ when next_type = Ordered ->
-    NumList (get_blocks 1 l Ordered) :: parse_list (get_next_list l Ordered)
-  | _ ->
-    List (get_blocks 1 l Unordered) :: parse_list (get_next_list l Unordered)
 
 let rec get_next_term_list l depth =
   match l with
@@ -73,3 +68,4 @@ let rec get_table_line line :(table_block list)=
   | (cell_type, inlines) :: tl when cell_type = TableHeader -> TableHead (List.flatten inlines) :: get_table_line tl
   | (_, inlines) :: tl -> TableItem (List.flatten inlines) :: get_table_line tl
   | _ -> []
+
