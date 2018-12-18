@@ -417,6 +417,67 @@ let table_no_title _ctx =
       | Data 2A || Data 2B !! Data 2C\n\
       |}"
 
+let table_no_first_row _ctx =
+  assert_equal
+    [ Table ([String "Table Title" ; String "\n"], [  [ TableItem []
+                                                ; TableHead [String "Titre A" ; String "\n"]
+                                                ; TableHead [String "Titre B "]
+                                                ; TableHead [String "Titre C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 1" ; String "\n"]
+                                                ; TableItem [String "Data 1A "]
+                                                ; TableItem [String "Data 1B "]
+                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 2" ; String "\n"]
+                                                ; TableItem [String "Data 2A "]
+                                                ; TableItem [String "Data 2B "]
+                                                ; TableHead [String "Data 2C" ; String "\n"]
+                                                ]
+                                             ])
+    ]
+    "{|\n\
+      |+ Table Title\n\
+      | !! Titre A\n\
+      !Titre B !! Titre C\n\
+      |-------------------------------\n\
+      ! Titre 1\n\
+      | Data 1A || Data 1B || Data 1C\n\
+      |---------------------------------------------------\n\
+      ! Titre 2\n\
+      | Data 2A || Data 2B !! Data 2C\n\
+      |}"
+
+let table_no_title_no_first_row _ctx =
+  assert_equal
+    [ Table ([], [  [ TableItem []
+                                                ; TableHead [String "Titre A" ; String "\n"]
+                                                ; TableHead [String "Titre B "]
+                                                ; TableHead [String "Titre C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 1" ; String "\n"]
+                                                ; TableItem [String "Data 1A "]
+                                                ; TableItem [String "Data 1B "]
+                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                                ]
+                                              ; [ TableHead [String "Titre 2" ; String "\n"]
+                                                ; TableItem [String "Data 2A "]
+                                                ; TableItem [String "Data 2B "]
+                                                ; TableHead [String "Data 2C" ; String "\n"]
+                                                ]
+                                             ])
+    ]
+    "{|\n\
+      | !! Titre A\n\
+      !Titre B !! Titre C\n\
+      |-------------------------------\n\
+      ! Titre 1\n\
+      | Data 1A || Data 1B || Data 1C\n\
+      |---------------------------------------------------\n\
+      ! Titre 2\n\
+      | Data 2A || Data 2B !! Data 2C\n\
+      |}"
+
 let special_chars1 _ctx =
   assert_equal
     [ Paragraph [ String "Lorem "
@@ -482,6 +543,8 @@ let () =
                   ; "table_empty_cell_1" >:: table_empty_cell_1
                   ; "table_empty_cell_2" >:: table_empty_cell_2
                   ; "table_no_title" >:: table_no_title
+                  ; "table_no_first_row" >:: table_no_first_row
+                  ; "table_no_title_no_first_row" >:: table_no_title_no_first_row
                   ; "special_chars1" >:: special_chars1
                   ; "special_chars2" >:: special_chars2
                   ; "special_chars3" >:: special_chars3
