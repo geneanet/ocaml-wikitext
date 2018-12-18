@@ -26,7 +26,12 @@ block:
   | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* { 
       [ Header (h1, (List.flatten i)) ]
     }
-  | TABLE_START title = preceded(TABLE_TITLE, inline(regular)+)? lines = table_line* TABLE_END {
+  | TABLE_START title = preceded(TABLE_TITLE, inline(regular)+)? l1 = pair(TABLE_CELL, inline(regular)*)* l2 = table_line* TABLE_END {
+      let lines =
+        match l1 with
+        | [] -> l2
+        | _ -> (get_table_line l1) :: l2
+      in
       match title with
       | None -> [ Table ([], lines) ]
       | Some title -> [ Table (List.flatten title, lines) ]
