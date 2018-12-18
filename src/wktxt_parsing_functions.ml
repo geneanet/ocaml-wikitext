@@ -6,7 +6,6 @@ let rec get_pair_list_from_depth depth pair_list =
   | ((_, d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
   | list -> list
 
-
 let rec parse_list depth pair_list list_type :(block list list)=
   let build_list l_type l_content =
     if l_type = Unordered then List l_content
@@ -62,10 +61,8 @@ and get_def_blocks l depth :(def_block list)=
     ([], get_descriptions l depth) :: get_def_blocks (get_next_term_list tl depth) depth
   | _ -> []
 
-  
 let rec get_table_line line :(table_block list)=
   match line with
   | (cell_type, inlines) :: tl when cell_type = TableHeader -> TableHead (List.flatten inlines) :: get_table_line tl
   | (_, inlines) :: tl -> TableItem (List.flatten inlines) :: get_table_line tl
   | _ -> []
-
