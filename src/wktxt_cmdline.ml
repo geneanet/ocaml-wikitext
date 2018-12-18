@@ -23,7 +23,8 @@ let () =
   let lexbuf = Lexing.from_channel stdin in
   try
     let doc = set_table_of_content (Wktxt_parser.document Wktxt_lexer.main lexbuf) in
-    print_endline (Wktxt_type.show_document doc)
+    print_endline (Wktxt_type.show_document doc) ;
+    Wktxt_output.output_document (Printf.printf "%s") doc
   with
   | _ ->
     let curr = lexbuf.Lexing.lex_curr_p in
