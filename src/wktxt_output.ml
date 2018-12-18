@@ -22,6 +22,7 @@ and output_block out blck :(unit)=
   match blck with
   | Header (importance, content) ->
     display_item output_inline ("h" ^ (string_of_int importance)) out content
+  | Hrule -> out "<hr>"
   | Paragraph (content) ->
     display_item output_inline "p" out content
   | List (content_list) ->
@@ -47,4 +48,3 @@ and output_block out blck :(unit)=
     in
     display_item (display_item output_table_block "tr") "tbody" out content_list ;
     out "</table>"
-  | _ -> ()
