@@ -1,3 +1,5 @@
+__TOC__
+
 = Heading 1 =
 
 paragraph
@@ -52,3 +54,16 @@ or ends a list or an indented part.
 : Definition2
 : Definition3
 : Definition4
+
+{|
+|+ '''Titre'''
+|---
+| Orange
+| Pomme
+|-
+|Pain
+|Tarte
+|-
+|Beurre
+|Crème glacée 
+|}
