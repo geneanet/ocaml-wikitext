@@ -144,7 +144,7 @@ rule main = parse
       String.iter (update_lex_new_line lexbuf) s;
       EXTLINK s
     }
-  | "<nowiki>" _* as s "</nowiki>" {
+  | "<nowiki>" (_* as s) "</nowiki>" {
       newline := false;
       if debug then Printf.printf "NOWIKI : %s\n" s ;
       String.iter (update_lex_new_line lexbuf) s;

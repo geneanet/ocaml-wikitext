@@ -507,6 +507,13 @@ let special_chars4 _ctx =
     ]
     "Lorem == ipsum"
 
+let nowiki _ctx =
+  assert_equal
+    [ Paragraph [String "Voici du texte échappé " ; String ": "
+                ; String "[::;] </nowiki> d]{''' ''''' ''}----||"]
+    ]
+    "Voici du texte échappé : <nowiki>[::;] </nowiki> d]{''' ''''' ''}----||</nowiki>"
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "quote_fail1" >:: quote_fail1
@@ -552,4 +559,5 @@ let () =
                   ; "special_chars2" >:: special_chars2
                   ; "special_chars3" >:: special_chars3
                   ; "special_chars4" >:: special_chars4
+                  ; "nowiki" >:: nowiki
                   ])
