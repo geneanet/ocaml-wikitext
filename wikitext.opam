@@ -1,6 +1,6 @@
 opam-version: "2.0"
 maintainer: "Julien SAGOT <julien.sagot@geneanet.org>"
-authors: "Maxence ABELA"
+authors: "Maxence ABELA <maxence.abela+wikitext@gmail.com>"
 homepage: "https://github.com/geneanet/ocaml-wikitext"
 bug-reports: "https://github.com/geneanet/ocaml-wikitext/issues"
 dev-repo: "git+https://github.com/geneanet/ocaml-wikitext.git"
