@@ -56,8 +56,6 @@
 }
 
 let hrule = "----" ['-']*
-let bold = "'''"
-let italic = "''"
 let ws = [ ' ' '\t']
 let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';' '|' '!' '{' '}']
 let linkchar = [^'[' ']']
@@ -151,21 +149,14 @@ rule main = parse
       if debug then Printf.printf "STRING : %s\n" s ;
       STRING s
     }
-  | italic {
-      newline := false;
-      if debug then Printf.printf "ITALIC\n" ;
-      ITALIC 
-    }
-  | bold {
-      newline := false;
-      if debug then Printf.printf "BOLD\n" ;
-      BOLD
-    }
-  | bold italic {
-      newline := false;
-      if debug then Printf.printf "BOLDITALIC\n" ;
-      BOLDITALIC
-    }
+  | "'"+ as s {
+    newline := false ;
+    match String.length s with
+    | 2 -> ITALIC
+    | 3 -> BOLD
+    | 5 -> BOLDITALIC
+    | _ -> STRING s
+  }
   | eof _* {
       if debug then Printf.printf "EOF\n" ;
       EOF

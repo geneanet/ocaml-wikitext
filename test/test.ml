@@ -9,6 +9,11 @@ let assert_equal expected input =
   let ast = Wktxt_parser.document Wktxt_lexer.main lexbuf in
   assert_equal ~printer:Wktxt_type.show_document expected ast
 
+let quote_fail1 _ctx =
+  assert_equal
+    [ Paragraph [ String "test " ; String ": " ; String "'" ; String "a" ; String "'" ]]
+    "test : 'a'"
+
 let bold_1 _ctx =
   assert_equal
     [ Paragraph [ String "Lorem "
@@ -507,7 +512,8 @@ let special_chars4 _ctx =
 
 let () =
   run_test_tt_main
-    ("wktxt" >::: [ "bold_1" >:: bold_1
+    ("wktxt" >::: [ "quote_fail1" >:: quote_fail1
+                  ; "bold_1" >:: bold_1
                   ; "bold_2" >:: bold_2
                   ; "bold_3" >:: bold_3
                   ; "italic_1" >:: italic_1
