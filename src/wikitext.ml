@@ -4,8 +4,8 @@ let get_current_parser_position lexbuf =
   let curr = lexbuf.Lexing.lex_curr_p in
   let line = curr.Lexing.pos_lnum in
   let col = curr.Lexing.pos_cnum - curr.Lexing.pos_bol in
-  let tok = Lexing.lexeme lexbuf in
-  Printf.sprintf "line %d, col %d, token [%s]" line col tok
+  let lexeme = Lexing.lexeme lexbuf in
+  Printf.sprintf "line %d, col %d, lexeme [%s]" line col lexeme
 
 let doc_from_lexbuf lexbuf =
   Wktxt_lexer.newline := true ;
@@ -29,4 +29,4 @@ let doc_to_chan doc chan =
 let doc_to_file doc filename =
   let chan = open_out filename in
   let () = doc_to_chan doc chan in
-  flush chan
+  close_out chan

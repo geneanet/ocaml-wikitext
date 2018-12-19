@@ -46,14 +46,16 @@ let set_table_of_content doc =
     | Header (depth, inlines) ->
       toc_list := ((Ordered, depth), [inlines]) :: !toc_list ;
       blck
-    | _ -> default_mapper.block self blck in
+    | _ -> default_mapper.block self blck
+  in
   let mapper = { default_mapper with block } in
-  let () = match mapper.document mapper doc with _ -> () in
+  let () = ignore (mapper.document mapper doc) in
   let toc_ast = List.hd (List.flatten (Wktxt_parsing_functions.parse_list 0 (List.rev !toc_list) Ordered)) in
   let block self blck =
     match blck with
-    | Paragraph l when l = [String "__TOC__" ; String "\n"] -> toc_ast
+    | Paragraph [String "__TOC__" ; String "\n"] -> toc_ast
     | List _ | NumList _ | DefList _ -> blck
-    | _ -> default_mapper.block self blck in
+    | _ -> default_mapper.block self blck
+  in
   let mapper = { default_mapper with block } in
   mapper.document mapper doc
