@@ -6,7 +6,7 @@
 %token<int> HEADER
 %token<Wktxt_type.order*int> LIST
 %token<Wktxt_type.def_type*int> DEFLIST
-%token<string> STRING LINK EXTLINK
+%token<string> STRING LINK EXTLINK NOWIKI
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
 %token TABLE_START TABLE_END TABLE_TITLE TABLE_NEW_LINE
@@ -97,6 +97,7 @@ noformat:
 
 inline(param):
   | s = STRING { [String s] }
+  | s = NOWIKI { [String s] }
   | s = LINK { [Link s] }
   | s = EXTLINK { [ExtLink s] }
   | p = param { p }
