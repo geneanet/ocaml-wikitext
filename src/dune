@@ -7,7 +7,10 @@
 (library
   (public_name wikitext)
   (libraries ppx_deriving.show)
-  (modules wktxt_parser wktxt_lexer wktxt_type wktxt_mapper wktxt_parsing_functions wktxt_output)
+  (modules  wktxt_parser wktxt_lexer
+            wktxt_type wktxt_mapper
+            wktxt_parsing_functions
+            wktxt_output wikitext)
   (preprocess (pps ppx_deriving.show))
   (wrapped false)
 )
