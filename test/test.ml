@@ -2,11 +2,8 @@ open OUnit2
 open Wktxt_type
 
 let assert_equal expected input =
-  Wktxt_lexer.newline := true ;
-  Wktxt_lexer.last_def_term_line := 0 ;
-  Wktxt_lexer.last_def_term_depth := 0 ;
   let lexbuf = Lexing.from_string input in
-  let ast = Wktxt_parser.document Wktxt_lexer.main lexbuf in
+  let ast = Wikitext.doc_from_lexbuf lexbuf in
   assert_equal ~printer:Wktxt_type.show_document expected ast
 
 let quote_fail1 _ctx =
