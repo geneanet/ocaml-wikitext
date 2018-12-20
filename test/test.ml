@@ -507,12 +507,20 @@ let special_chars4 _ctx =
     ]
     "Lorem == ipsum"
 
-let nowiki _ctx =
+let nowiki_1 _ctx =
   assert_equal
-    [ Paragraph [String "Voici du texte échappé " ; String ": "
-                ; String "[::;] </nowiki> d]{''' ''''' ''}----||"]
+    [ Paragraph [ String "[::;] d]{''' ''''' ''}----||"]
     ]
-    "Voici du texte échappé : <nowiki>[::;] </nowiki> d]{''' ''''' ''}----||</nowiki>"
+    "<nowiki>[::;] d]{''' ''''' ''}----||</nowiki>"
+
+let nowiki_2 _ctx =
+  assert_equal
+    [ Paragraph [ String "''test''" ; String " "
+                ; Bold [String "gras"] ; String " "
+                ; String "'''pas gras'''"
+                ]
+    ]
+    "<nowiki>''test''</nowiki> '''gras''' <nowiki>'''pas gras'''</nowiki>"
 
 let () =
   run_test_tt_main
@@ -559,5 +567,6 @@ let () =
                   ; "special_chars2" >:: special_chars2
                   ; "special_chars3" >:: special_chars3
                   ; "special_chars4" >:: special_chars4
-                  ; "nowiki" >:: nowiki
+                  ; "nowiki_1" >:: nowiki_1
+                  ; "nowiki_2" >:: nowiki_2
                   ])
