@@ -57,7 +57,7 @@
 
 let hrule = "----" ['-']*
 let ws = [ ' ' '\t']
-let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';' '|' '!' '{' '}']
+let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';' '|' '!' '{' '}' '<']
 let linkchar = [^'[' ']']
 
 let table_start = "{|"
@@ -72,7 +72,25 @@ let header_cell = "!"
 (*
   When editing these lexing rules, do not forget to use and update the newline reference.
 *)
-rule main = parse
+rule nowiki buf = parse
+  | "</nowiki>" {
+      newline := false;
+      let s = Buffer.contents buf in
+      String.iter (update_lex_new_line lexbuf) s ;
+      NOWIKI (s)
+    }
+  | _ as c {
+      Buffer.add_char buf c;
+      nowiki buf lexbuf
+    }
+
+and main = parse
+  | "<nowiki>" {
+    nowiki (Buffer.create 1024) lexbuf
+  }
+  | "<" {
+      STRING "<"
+    }
   | (ws* table_title ws*) as s {
       if debug && !newline then Printf.printf "TABLE_TITLE\n" ;
       let tok = token_or_str (s, TABLE_TITLE) in table_or_str (s, tok)
@@ -143,12 +161,6 @@ rule main = parse
       if debug then Printf.printf "EXTLINK : %s\n" s ;
       String.iter (update_lex_new_line lexbuf) s;
       EXTLINK s
-    }
-  | "<nowiki>" (_* as s) "</nowiki>" {
-      newline := false;
-      if debug then Printf.printf "NOWIKI : %s\n" s ;
-      String.iter (update_lex_new_line lexbuf) s;
-      NOWIKI s
     }
   | wordchar+ as s {
       newline := false ;
