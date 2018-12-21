@@ -20,8 +20,8 @@ and output_inline out inl :(unit)=
 
 and output_block out blck :(unit)= 
   match blck with
-  | Header (importance, content) ->
-    display_item output_inline ("h" ^ (string_of_int importance)) out content
+  | Header (id, importance, content) ->
+    display_item output_inline ("h" ^ (string_of_int importance) ^ id) out content
   | Hrule -> out "<hr>"
   | Paragraph (content) ->
     display_item output_inline "p" out content

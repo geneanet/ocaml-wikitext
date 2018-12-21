@@ -10,8 +10,8 @@ type wktxt_document_mapper =
 let document self = List.map (self.block self)
 
 and block self blck : block = match blck with
-  | Header (importance, content) ->
-      Header (importance, (List.map (self.inline self) content))
+  | Header (id, importance, content) ->
+      Header (id, importance, (List.map (self.inline self) content))
   | Paragraph (content) ->
       Paragraph (List.map (self.inline self) content)
   | List (content_list) ->
@@ -43,7 +43,7 @@ let set_table_of_content doc =
   let toc_list = ref [] in
   let block self blck =
     match blck with
-    | Header (depth, inlines) when depth <> 1 ->
+    | Header (_, depth, inlines) when depth <> 1 ->
       toc_list := ((Ordered, depth - 1), [inlines]) :: !toc_list ;
       blck
     | _ -> default_mapper.block self blck
