@@ -27,7 +27,7 @@ block:
   | EMPTYLINE* b = block { b }
   | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* { 
       header_id := !header_id + 1 ;
-      [ Header ((" id=\"header_id_" ^ string_of_int !header_id ^ "\""), h1, (List.flatten i)) ]
+      [ Header (("header_id_" ^ string_of_int !header_id), h1, (List.flatten i)) ]
     }
   | TABLE_START title = preceded(TABLE_TITLE, inline(regular)+)? l1 = pair(TABLE_CELL, inline(regular)*)* l2 = table_line* TABLE_END {
       let lines =

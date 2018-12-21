@@ -43,8 +43,9 @@ let set_table_of_content doc =
   let toc_list = ref [] in
   let block self blck =
     match blck with
-    | Header (_, depth, inlines) when depth <> 1 ->
-      toc_list := ((Ordered, depth - 1), [inlines]) :: !toc_list ;
+    | Header (id, depth, inlines) when depth <> 1 ->
+      let link = (String ("<a href=\"#" ^ id ^ "\">") :: inlines) @ [String "</a>"] in
+      toc_list := ((Ordered, depth - 1), [link]) :: !toc_list ;
       blck
     | _ -> default_mapper.block self blck
   in
