@@ -4,6 +4,7 @@ type wktxt_document_mapper =
 {
   document : wktxt_document_mapper -> document -> document
   ; block  : wktxt_document_mapper -> block -> block
+  ; table_block : wktxt_document_mapper -> table_block -> table_block
   ; inline : wktxt_document_mapper -> inline -> inline
 }
 
@@ -23,18 +24,28 @@ and block self blck : block = match blck with
         (fun (l1, l2) ->
           (List.map (self.inline self) l1, List.map (self.block self) l2))
         content_list)
-  | _ -> blck
+  | Table (title, content_list) ->
+      Table ((List.map (self.inline self) title)
+             , (List.map (fun l -> List.map (self.table_block self) l) content_list))
+  | Hrule -> Hrule
+
+and table_block self t_blck = match t_blck with
+  | TableHead content -> TableHead (List.map (self.inline self) content)
+  | TableItem content -> TableItem (List.map (self.inline self) content)
 
 and inline self inl = match inl with
   | Italic l ->
       Italic (List.map (self.inline self) l)
   | Bold l ->
       Bold (List.map (self.inline self) l)
-  | _ -> inl
+  | String str -> String str
+  | Link str -> Link str
+  | ExtLink str -> ExtLink str
 
 let default_mapper =
   { document
   ; block
+  ; table_block
   ; inline
 }
 

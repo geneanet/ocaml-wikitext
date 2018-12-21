@@ -17,6 +17,11 @@ and block =
   | Hrule
 [@@deriving show { with_path = false }]
 
+and table_block =
+  | TableHead of inline list
+  | TableItem of inline list
+[@@deriving show { with_path = false }]
+
 and def_block = inline list * block list
 [@@deriving show { with_path = false }]
 
@@ -26,11 +31,6 @@ and inline =
   | String of string
   | Link of string
   | ExtLink of string
-[@@deriving show { with_path = false }]
-
-and table_block =
-  | TableHead of inline list
-  | TableItem of inline list
 [@@deriving show { with_path = false }]
 
 (* [@@deriving show] va créer automatique les fonctions
