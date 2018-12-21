@@ -38,12 +38,12 @@ let default_mapper =
   ; inline
 }
 
-let set_table_of_content doc =
-  let open Wktxt_type in
+let get_table_of_content doc =
   let toc_list = ref [] in
   let block self blck =
     match blck with
     | Header (id, depth, inlines) when depth <> 1 ->
+      (* à remplacer par une fonction create_link *)
       let link = (String ("<a href=\"#" ^ id ^ "\">") :: inlines) @ [String "</a>"] in
       toc_list := ((Ordered, depth - 1), [link]) :: !toc_list ;
       blck
@@ -51,7 +51,13 @@ let set_table_of_content doc =
   in
   let mapper = { default_mapper with block } in
   let () = ignore (mapper.document mapper doc) in
-  let toc_ast = List.hd (List.flatten (Wktxt_parsing_functions.parse_list 0 (List.rev !toc_list) Ordered)) in
+  let toc_ast_list = Wktxt_parsing_functions.parse_list 0 (List.rev !toc_list) Ordered in
+  match toc_ast_list with
+  | [] -> NumList []
+  | _ -> List.hd (List.flatten toc_ast_list)
+
+let set_table_of_content doc =
+  let toc_ast = get_table_of_content doc in
   let block self blck =
     match blck with
     | Paragraph [String "__TOC__" ; String "\n"] -> toc_ast

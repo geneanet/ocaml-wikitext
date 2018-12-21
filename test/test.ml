@@ -1,10 +1,11 @@
 open OUnit2
 open Wktxt_type
+open Wikitext
 
 let assert_equal expected input =
   let lexbuf = Lexing.from_string input in
-  let ast = Wikitext.doc_from_lexbuf lexbuf in
-  assert_equal ~printer:Wktxt_type.show_document expected ast
+  let doc = Mapper.set_table_of_content (doc_from_lexbuf lexbuf) in
+  assert_equal ~printer:Wktxt_type.show_document expected doc
 
 let quote_fail1 _ctx =
   assert_equal
