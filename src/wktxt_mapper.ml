@@ -76,3 +76,22 @@ let set_table_of_content doc =
   in
   let mapper = { default_mapper with block } in
   mapper.document mapper doc
+
+let create_link link =
+  let get_link url text =
+    "<a href=\"" ^ url ^ "\">" ^ text ^ "</a>"
+  in
+  let length = String.length link in
+  match String.index_opt link ' ' with
+  | None -> get_link link link
+  | Some space_pos ->
+    get_link (String.sub link 0 space_pos) (String.sub link (space_pos + 1) (length - space_pos - 1))
+
+let set_links doc =
+  let inline self inl =
+    match inl with
+    | ExtLink s -> ExtLink (create_link s)
+    | _ -> default_mapper.inline self inl
+  in
+  let mapper = { default_mapper with inline } in
+  mapper.document mapper doc

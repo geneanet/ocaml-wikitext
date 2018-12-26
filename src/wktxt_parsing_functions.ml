@@ -66,13 +66,3 @@ let rec get_table_line line :(table_block list)=
   | (cell_type, inlines) :: tl when cell_type = TableHeader -> TableHead (List.flatten inlines) :: get_table_line tl
   | (_, inlines) :: tl -> TableItem (List.flatten inlines) :: get_table_line tl
   | _ -> []
-
-let create_link url text =
-  "<a href=\"" ^ url ^ "\">" ^ text ^ "</a>"
-
-let parse_external_link link =
-  let length = String.length link in
-  match String.index_opt link ' ' with
-  | None -> create_link link link
-  | Some space_pos ->
-    create_link (String.sub link 0 space_pos) (String.sub link (space_pos + 1) (length - space_pos - 1))

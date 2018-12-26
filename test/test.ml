@@ -4,7 +4,7 @@ open Wikitext
 
 let assert_equal expected input =
   let lexbuf = Lexing.from_string input in
-  let doc = Mapper.set_table_of_content (doc_from_lexbuf lexbuf) in
+  let doc = doc_from_lexbuf lexbuf |> Mapper.set_table_of_content |> Mapper.set_links in
   assert_equal ~printer:Wktxt_type.show_document expected doc
 
 let quote_fail1 _ctx =
