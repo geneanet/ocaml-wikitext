@@ -15,12 +15,16 @@ afin de pouvoir être visualisé dans une page web.
 
 == Format du texte ==
 
-; '''gras''' et ''italique''
+; '''gras''' et ''italique'' :
 : Pour écrire une portion de texte en gras ou en italique : '''<nowiki>'''gras''' et ''italique''</nowiki>'''.
-; '''''gras et italique à la fois'''''
+; '''''gras et italique à la fois''''' :
 : On peut bien-sûr cumuler les apostrophes pour écrire à la fois en gras et en italique.
-; Pour échapper des chaînes de caractères
+; Pour échapper des chaînes de caractères :
 : la balise <'''nowiki'''>texte échappé<'''/nowiki'''> est utilisée pour échapper du texte qui serait autrement interprété par le parseur.
+; liens vers des pages extérieures :
+: placer l'url suivi d'un espace et du texte voulu, le tout entre crochet
+: <nowiki>[https://www.google.com lien vers google.com]</nowiki> donnera [https://www.google.com lien vers google.com]
+: <nowiki>[https://www.google.com]</nowiki> donnera [https://www.google.com]
 
 ''Il est possible de personnaliser son texte en utilisant des balises HTML.''
 
@@ -80,7 +84,7 @@ par 1 ou plusieurs caractères '''#'''.
 
 === Listes mixtes ===
 
-Il est possible de mélanger liste à puce et liste numérotée à condition que leurs niveaux de profondeur soient
+Il est possible de mélanger listes à puce et listes numérotée à condition que leurs niveaux de profondeur soient
 différents.
 
 '''Exemple :'''
