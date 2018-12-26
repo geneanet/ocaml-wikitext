@@ -102,7 +102,7 @@ inline(param):
   | s = STRING { [String s] }
   | s = NOWIKI { [String s] }
   | s = LINK { [Link s] }
-  | s = EXTLINK { [ExtLink s] }
+  | s = EXTLINK { [ExtLink (parse_external_link s)] }
   | p = param { p }
 ;
 
