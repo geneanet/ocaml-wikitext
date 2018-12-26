@@ -102,7 +102,7 @@ let space_2 _ctx =
 
 let link_1 _ctx =
   assert_equal
-    [ Paragraph [ String "This is an "; ExtLink "www.test.com external link"
+    [ Paragraph [ String "This is an "; ExtLink "<a href=\"www.test.com\">external link</a>"
                 ; String "."
                 ]
     ]
