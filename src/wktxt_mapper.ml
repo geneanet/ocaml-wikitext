@@ -54,7 +54,6 @@ let get_table_of_content doc =
   let block self blck =
     match blck with
     | Header (id, depth, inlines) when depth <> 1 ->
-      (* à remplacer par une fonction create_link *)
       let link = (String ("<a href=\"#" ^ id ^ "\">") :: inlines) @ [String "</a>"] in
       toc_list := ((Ordered, depth - 1), [link]) :: !toc_list ;
       blck
