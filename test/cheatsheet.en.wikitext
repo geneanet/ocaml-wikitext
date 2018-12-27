@@ -8,7 +8,7 @@ __TOC__
 
 ''Wikitext'' is a light language for text formatting, usually in a webpage.
 
-It contains only a few keywords, making it more user-friendly than HTML.
+It contains only a few keywords, making it more user-friendly than HTML.<br>
 This parser is meant to process ''wikitext'' and output HTML code.
 
 == Text formatting ==
@@ -30,7 +30,7 @@ This parser is meant to process ''wikitext'' and output HTML code.
 
 One can choose to add a table of contents by placing the line "'''__TOC__'''"
 preceded and followed by empty lines.<br>
-There is usually only one title per article, so it is ignored in the generated table of contents.
+There is usually only one big title per article, so it is ignored in the generated table of contents.
 
 '''Example :'''<br>
 Lorem ipsum.
