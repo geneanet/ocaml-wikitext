@@ -20,6 +20,21 @@ let doc_from_lexbuf lexbuf =
     let lexeme = Lexing.lexeme lexbuf in
     raise (ParsingError (line, col, lexeme))
 
+(** See {!val:doc_from_lexbuf} *)
+let doc_from_string string =
+  doc_from_lexbuf (Lexing.from_string string)
+
+(** See {!val:doc_from_lexbuf} *)
+let doc_from_channel chan =
+  doc_from_lexbuf (Lexing.from_channel chan)
+
+(** See {!val:doc_from_lexbuf} *)
+let doc_from_file file =
+  let chan = open_in file in
+  let doc = doc_from_channel chan in
+  close_in chan ;
+  doc
+
 let output_document =
   Wktxt_output.output_document
 
