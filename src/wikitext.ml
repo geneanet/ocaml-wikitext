@@ -12,6 +12,7 @@ let doc_from_lexbuf lexbuf =
     Wktxt_lexer.last_def_term_line := 0 ;
     Wktxt_lexer.last_def_term_depth := 0 ;
     Wktxt_lexer.in_table := false ;
+    Wktxt_lexer.header_isopen := false ;
     Wktxt_parser.document Wktxt_lexer.main lexbuf
   with _ ->
     let curr = lexbuf.Lexing.lex_curr_p in
