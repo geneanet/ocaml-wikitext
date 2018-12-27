@@ -95,7 +95,7 @@ let paragraph_2 _ctx =
 let paragraph_3 _ctx =
   assert_equal
     [ Paragraph [ String "x " ; String "<" ; String "=" ]
-    ; Header ("", 1, [ String "Title" ] ) ]
+    ; Header ("header_id_1", 1, [ String "Title " ] ) ]
     "x <=\n= Title ="
 
 let paragraph_4 _ctx =

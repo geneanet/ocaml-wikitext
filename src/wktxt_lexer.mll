@@ -6,6 +6,7 @@
   let last_def_term_line = ref 0
   let last_def_term_depth = ref 0
   let in_table = ref false
+  let header_isopen = ref false
 
   (* Retourne soit [String str], soit [token], suivant si
     on est en début de ligne ou pas.
@@ -129,6 +130,7 @@ and main = parse
     }
   | (ws* '='+ as s1 ws*) as s2 {
       if debug then Printf.printf "HEADER START %d\n" (String.length s1) ;
+      header_isopen := true ;
       token_or_str (s2, HEADER (String.length s1))
     }
   | (ws* '*'+ as s1 ws*) as s2 {
@@ -143,14 +145,19 @@ and main = parse
       if debug then Printf.printf "HRULE\n" ;
       token_or_str (s, HRULE )
     }
-  | ws* '='+ as s ws* '\n' {
-      if debug then Printf.printf "HEADER END %d \n" (String.length s) ;
-      Lexing.new_line lexbuf ;
+  | (ws* as sp1) ('='+ as s) (ws* as sp2) ('\n' | eof) {
       newline := true ;
-      HEADER (String.length s)
+      Lexing.new_line lexbuf ;
+      if !header_isopen then begin
+        header_isopen := false ;
+        if debug then Printf.printf "HEADER END %d \n" (String.length s) ;
+        HEADER (String.length s)
+      end
+      else
+        STRING (sp1 ^ s ^ sp2)
     }
   | ws* '\n' as s {
-     newline_token_or_str (s, EMPTYLINE) lexbuf
+      newline_token_or_str (s, EMPTYLINE) lexbuf
     }
   | "[[" (linkchar+ as s) "]]" {
       newline := false;
@@ -177,7 +184,7 @@ and main = parse
     | 5 -> BOLDITALIC
     | _ -> STRING s
   }
-  | eof _* {
+  | eof {
       if debug then Printf.printf "EOF\n" ;
       EOF
     }
