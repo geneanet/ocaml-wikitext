@@ -89,6 +89,8 @@ and main = parse
     nowiki (Buffer.create 1024) lexbuf
   }
   | "<" {
+      newline := false ;
+      if debug then Printf.printf "STRING : <\n" ;
       STRING "<"
     }
   | (ws* table_title ws*) as s {
