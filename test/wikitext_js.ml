@@ -1,4 +1,5 @@
 open Js_of_ocaml
+open Wikitext
 
 let () =
   let getElementById coerce id =
@@ -11,20 +12,15 @@ let () =
   let input = getElementById Dom_html.CoerceTo.textarea "input" in
   let output = getElementById Dom_html.CoerceTo.div "output" in
   let update () =
-    let txt = Js.to_string input##.value in
-    let lexbuf = Lexing.from_string txt in
     try
-      let doc = Wktxt_parser.document Wktxt_lexer.main lexbuf in
-      output##.innerHTML := Js.string @@ Wktxt_type.show_document doc
+      let doc = doc_from_string (Js.to_string input##.value) in
+      let doc = Mapper.set_table_of_content doc in
+      let doc = Mapper.set_links doc in
+      output##.innerHTML := Js.string @@ doc_to_string doc
     with
-    | _ ->
-       let curr = lexbuf.Lexing.lex_curr_p in
-       let line = curr.Lexing.pos_lnum in
-       let col = curr.Lexing.pos_cnum - curr.Lexing.pos_bol in
-       let tok = Lexing.lexeme lexbuf in
-       output##.innerHTML :=
-         Js.string @@
-           Printf.sprintf "Error line %d, col %d, token [%s]" line col tok
+    | ParsingError (line, col, lexeme) ->
+      output##.innerHTML :=
+        Js.string @@ Printf.sprintf "line %d, col %d, lexeme [%s]" line col lexeme
   in
   input##.oninput := Dom.handler (fun _ -> update () ; Js._false) ;
   update ()
