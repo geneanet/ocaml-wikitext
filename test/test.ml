@@ -84,6 +84,25 @@ let paragraph_1 _ctx =
     ]
     "Lorem ipsum\n  \ndolores sit amet"
 
+let paragraph_2 _ctx =
+  assert_equal
+    [ Paragraph [ String "Lorem ipsum "
+                ; String "<"
+                ; String "= "
+                ; String "dolores sit amet" ] ]
+    "Lorem ipsum <= dolores sit amet"
+
+let paragraph_3 _ctx =
+  assert_equal
+    [ Paragraph [ String "x " ; String "<" ; String "=" ]
+    ; Header ("", 1, [ String "Title" ] ) ]
+    "x <=\n= Title ="
+
+let paragraph_4 _ctx =
+  assert_equal
+    [ Paragraph [ String "<" ; String "=" ; String "x" ] ]
+    "<=x"
+
 let space_1 _ctx =
   assert_equal
     [ Paragraph [ String "italic text at"
@@ -535,6 +554,9 @@ let () =
                   ; "italic_4" >:: italic_4
                   ; "bolditalic_1" >:: bolditalic_1
                   ; "paragraph_1" >:: paragraph_1
+                  ; "paragraph_2" >:: paragraph_2
+                  ; "paragraph_3" >:: paragraph_3
+                  ; "paragraph_4" >:: paragraph_4
                   ; "space_1" >:: space_1
                   ; "space_2" >:: space_2
                   ; "link_1" >:: link_1
