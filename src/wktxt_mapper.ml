@@ -77,10 +77,11 @@ let set_table_of_content doc =
   let mapper = { default_mapper with block } in
   mapper.document mapper doc
 
-let create_link link =
+let create_link raw_link =
   let get_link url text =
     "<a href=\"" ^ url ^ "\">" ^ text ^ "</a>"
   in
+  let link = String.trim raw_link in
   let length = String.length link in
   match String.index_opt link ' ' with
   | None -> get_link link link
@@ -94,4 +95,61 @@ let set_links doc =
     | _ -> default_mapper.inline self inl
   in
   let mapper = { default_mapper with inline } in
+  mapper.document mapper doc
+
+let normalize_blocks doc =
+  let rec concat_inlines inlines =
+    match inlines with
+    | [] -> []
+    | [ Bold inl ] -> [ Bold (concat_inlines inl) ]
+    | [ Italic inl ] -> [ Italic (concat_inlines inl) ]
+    | String s1 :: String s2 :: tl -> concat_inlines (String (s1 ^ s2) :: tl)
+    | hd :: tl -> hd :: concat_inlines tl
+  and concat_trim_inlines inlines =
+    let rec remove_trailing_spaces str position =
+    if position = 0 then begin
+      match str.[position] with
+      | '\n' | ' ' | '\t' -> ""
+      | _ -> String.make 1 str.[position]
+      end
+    else begin
+      match str.[position] with
+      | '\n' | ' ' | '\t' -> remove_trailing_spaces str (position - 1)
+      | _ -> String.sub str 0 (position + 1)
+      end
+    in
+    match inlines with
+    | [] -> []
+    | [ Bold inl ] -> [ Bold (concat_trim_inlines inl) ]
+    | [ Italic inl ] -> [ Italic (concat_trim_inlines inl) ]
+    | [ String s ] -> [String (remove_trailing_spaces s (String.length s - 1))]
+    | String s1 :: String s2 :: tl -> concat_trim_inlines (String (s1 ^ s2) :: tl)
+    | Bold inl :: tl -> Bold (concat_inlines inl) :: concat_trim_inlines tl
+    | Italic inl :: tl -> Italic (concat_inlines inl) :: concat_trim_inlines tl
+    | hd :: tl -> hd :: concat_trim_inlines tl
+  in
+  let block self blck = match blck with
+    | Header (id, importance, content) ->
+        Header (id, importance, concat_trim_inlines content)
+    | Paragraph (content) ->
+        Paragraph (concat_trim_inlines content)
+    | DefList (content_list) ->
+        DefList (List.map
+          (fun (l1, l2) ->
+            (concat_trim_inlines l1, List.map (self.block self) l2))
+          content_list)
+    | Table (title, content_list) ->
+        Table (concat_trim_inlines title, (List.map (fun l -> List.map (self.table_block self) l) content_list))
+    | _ -> default_mapper.block self blck
+  and table_block _ t_blck = match t_blck with
+    | TableHead content -> TableHead (concat_trim_inlines content)
+    | TableItem content -> TableItem (concat_trim_inlines content)
+  and inline self inl = match inl with
+    | Italic l ->
+        Italic (concat_trim_inlines l)
+    | Bold l ->
+        Bold (concat_trim_inlines l)
+    | _ -> default_mapper.inline self inl
+  in
+  let mapper = { default_mapper with block ; table_block ; inline} in
   mapper.document mapper doc
