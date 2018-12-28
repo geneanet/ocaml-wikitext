@@ -72,10 +72,9 @@ let get_table_of_content doc =
     replaces it by the table of content.
     If it is not found, does nothing. *)
 let set_table_of_content doc =
-  let toc_ast = get_table_of_content doc in
   let block self blck =
     match blck with
-    | Paragraph [String "__TOC__" ; String "\n"] -> toc_ast
+    | Paragraph [String "__TOC__" ; String "\n"] -> get_table_of_content doc
     | List _ | NumList _ | DefList _ -> blck
     | _ -> default_mapper.block self blck
   in
