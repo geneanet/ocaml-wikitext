@@ -49,6 +49,8 @@ let default_mapper =
   ; inline
 }
 
+(** [get_table_of_content doc] returns a Numbered list (NumList) that contains every subtitle
+    found in the given document. Each list item is a link to the homonym subtitle. *)
 let get_table_of_content doc =
   let toc_list = ref [] in
   let block self blck =
@@ -66,6 +68,9 @@ let get_table_of_content doc =
   | [] -> NumList []
   | _ -> List.hd (List.flatten toc_ast_list)
 
+(** [set_table_of_content doc] if a Paragraph that contains "__TOC__" followed by a newline is found in doc,
+    replaces it by the table of content.
+    If it is not found, does nothing. *)
 let set_table_of_content doc =
   let toc_ast = get_table_of_content doc in
   let block self blck =
@@ -77,6 +82,7 @@ let set_table_of_content doc =
   let mapper = { default_mapper with block } in
   mapper.document mapper doc
 
+(** [create_link raw_link] returns the html equivalent of the given link that is "url some_text" *)
 let create_link raw_link =
   let get_link url text =
     "<a href=\"" ^ url ^ "\">" ^ text ^ "</a>"
@@ -88,6 +94,7 @@ let create_link raw_link =
   | Some space_pos ->
     get_link (String.sub link 0 space_pos) (String.sub link (space_pos + 1) (length - space_pos - 1))
 
+(** [set_links doc] returns doc with every links converted in html *)
 let set_links doc =
   let inline self inl =
     match inl with
@@ -97,6 +104,8 @@ let set_links doc =
   let mapper = { default_mapper with inline } in
   mapper.document mapper doc
 
+(** [normalize_blocks doc] Whenever it is possible, concatenates Strings together and removes any trailing spaces
+    at the end of each block, then returns the document. *)
 let normalize_blocks doc =
   let rec concat_inlines inlines =
     match inlines with
