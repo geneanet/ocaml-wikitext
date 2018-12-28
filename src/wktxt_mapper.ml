@@ -107,11 +107,7 @@ let normalize_blocks doc =
     | hd :: tl -> hd :: concat_inlines tl
   and concat_trim_inlines inlines =
     let rec remove_trailing_spaces str position =
-    if position = 0 then begin
-      match str.[position] with
-      | '\n' | ' ' | '\t' -> ""
-      | _ -> String.make 1 str.[position]
-      end
+    if position < 0 then ""
     else begin
       match str.[position] with
       | '\n' | ' ' | '\t' -> remove_trailing_spaces str (position - 1)
