@@ -3,7 +3,6 @@
   open Wktxt_type
   open Wktxt_parsing_functions
 
-  let header_id = ref 0
 %}
 
 %token<int> HEADER
@@ -27,9 +26,8 @@ document:
 
 block:
   | EMPTYLINE* b = block { b }
-  | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* {
-      header_id := !header_id + 1 ;
-      [ Header (("header_id_" ^ string_of_int !header_id), h1, (List.flatten i)) ]
+  | h = HEADER i = inline(regular)+ HEADER EMPTYLINE* {
+      [ Header (h, (List.flatten i)) ]
     }
   | TABLE_START title = preceded(TABLE_TITLE, inline(regular)+)? l1 = pair(TABLE_CELL, inline(regular)*)* l2 = table_line* TABLE_END {
       let lines =

@@ -19,8 +19,8 @@ type mapper =
 let document self = List.map (self.block self)
 
 and block self = function
-  | Header (id, importance, content) ->
-      Header (id, importance, (List.map (self.inline self) content))
+  | Header (importance, content) ->
+      Header (importance, (List.map (self.inline self) content))
   | Paragraph (content) ->
       Paragraph (List.map (self.inline self) content)
   | List (content_list) ->
@@ -56,6 +56,14 @@ let default_mapper =
   ; inline
   }
 
+let rec noformat inlines =
+  let aux = function
+    | Bold x -> noformat x
+    | Italic x -> noformat x
+    | String _ | Link _ as x -> [ x ]
+  in
+  List.flatten (List.map aux inlines)
+
 (** [toc doc]
     Compute the table of contents of [doc]. This table of contents
     is computed by looking at headers. First level header is omitted.
@@ -63,22 +71,25 @@ let default_mapper =
     to title's anchors.
 *)
 let toc
-  : document -> block option =
+  : document -> (document * block) option =
   fun doc ->
   let toc_list = ref [] in
+  let cnt = ref 0 in
+  let id () = incr cnt ; "wikitext-header-anchor-" ^ string_of_int !cnt in
   let block self blck =
     match blck with
-    | Header (id, depth, inlines) when depth <> 1 ->
+    | Header (d, inlines) when d <> 1 ->
+      let id = id () in
       let link = (String ("<a href=\"#" ^ id ^ "\">") :: inlines) @ [String "</a>"] in
-      toc_list := ((Ordered, depth - 1), [link]) :: !toc_list ;
-      blck
+      toc_list := ((Ordered, d - 1), [link]) :: !toc_list ;
+      Header (d, String ("<span id=\"" ^ id ^ "\"></span>") :: inlines)
     | _ -> default_mapper.block self blck
   in
   let mapper = { default_mapper with block } in
-  let () = ignore (mapper.document mapper doc) in
+  let doc = mapper.document mapper doc in
   match Wktxt_parsing_functions.parse_list 0 (List.rev !toc_list) Ordered with
   | [] -> None
-  | toc :: _ -> Some toc
+  | toc :: _ -> Some (doc, toc)
 
 (** [set_toc doc]
     Replace ["__TOC__"] in [doc] by the auto-generated table of contents.
@@ -86,7 +97,7 @@ let toc
 let set_toc doc =
   match toc doc with
   | None -> doc
-  | Some toc ->
+  | Some (doc, toc) ->
     let block self blck =
       match blck with
       | Paragraph [ String "__TOC__" ] -> toc
@@ -177,8 +188,8 @@ let normalize doc =
   in
   let norm contents = trim true (concat contents) in
   let block self = function
-    | Header (id, lvl, content) ->
-      Header (id, lvl, norm content)
+    | Header (lvl, content) ->
+      Header (lvl, norm content)
     | Paragraph p ->
       Paragraph (norm p)
     | DefList l ->

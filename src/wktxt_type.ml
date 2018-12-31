@@ -8,7 +8,7 @@ type document = block list
 [@@deriving show { with_path = false }]
 
 and block =
-  | Header of string * int * inline list
+  | Header of int * inline list
   | Paragraph of inline list
   | List of block list list
   | NumList of block list list
