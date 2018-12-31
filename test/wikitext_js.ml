@@ -14,7 +14,7 @@ let () =
   let update () =
     try
       let doc = doc_from_string (Js.to_string input##.value) in
-      let doc = Mapper.set_table_of_content doc in
+      let doc = Mapper.set_toc doc in
       let doc = Mapper.set_links doc in
       output##.innerHTML := Js.string @@ doc_to_string doc
     with
