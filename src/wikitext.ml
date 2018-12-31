@@ -14,6 +14,7 @@ let doc_from_lexbuf : Lexing.lexbuf -> Type.document = fun lexbuf ->
     Wktxt_lexer.in_table := false ;
     Wktxt_lexer.header_isopen := false ;
     Wktxt_parser.document Wktxt_lexer.main lexbuf
+    |> Mapper.normalize
   with _ ->
     let curr = lexbuf.Lexing.lex_curr_p in
     let line = curr.Lexing.pos_lnum in

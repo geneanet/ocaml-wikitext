@@ -90,7 +90,7 @@ let set_toc doc =
   | Some toc ->
     let block self blck =
       match blck with
-      | Paragraph [String "__TOC__" ; String "\n"] -> toc
+      | Paragraph [ String "__TOC__" ] -> toc
       | List _ | NumList _ | DefList _ -> blck
       | _ -> default_mapper.block self blck
     in
@@ -131,7 +131,7 @@ let set_links doc =
 
 (** [normalize doc]
     Concatenates following [Strings] elements together
-    and removes any trailing spaces at the end blocks. *)
+    and removes block's leading and trailing spaces. *)
 let normalize doc =
   let rec concat = function
     | [] -> []
