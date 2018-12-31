@@ -29,6 +29,5 @@ and inline =
   | Bold of inline list
   | Italic of inline list
   | String of string
-  | Link of string
-  | ExtLink of string
+  | Link of int * string
 [@@deriving show { with_path = false }]

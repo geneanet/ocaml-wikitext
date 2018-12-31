@@ -2,7 +2,7 @@ open Wktxt_type
 
 let rec output_document out doc :(unit)= List.iter (output_block out) doc
 
-and display_item : 'a. ((string -> unit) -> 'a -> unit) -> string -> (string -> unit) -> 'a list -> unit = 
+and display_item : 'a. ((string -> unit) -> 'a -> unit) -> string -> (string -> unit) -> 'a list -> unit =
   fun displayer tag_name out content ->
     begin
     out ("<" ^ tag_name ^ ">") ;
@@ -16,9 +16,9 @@ and output_inline out inl :(unit)=
     display_item output_inline "b" out content
   | Italic (content) ->
     display_item output_inline "i" out content
-  | String str | Link str | ExtLink str -> out str
+  | String str | Link (_, str) -> out str
 
-and output_block out blck :(unit)= 
+and output_block out blck :(unit)=
   match blck with
   | Header (id, importance, content) ->
     display_item output_inline ("h" ^ (string_of_int importance) ^ " id=\"" ^ id ^ "\"") out content
@@ -34,7 +34,7 @@ and output_block out blck :(unit)=
       | ([],[]) -> ()
       | (term, []) -> display_item output_inline "dt" out term
       | ([], desc) -> display_item output_block "dd" out desc
-      | (term, desc) -> 
+      | (term, desc) ->
         display_item output_inline "dt" out term ;
         display_item output_block "dd" out desc
     in

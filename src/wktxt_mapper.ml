@@ -44,9 +44,8 @@ and table_block self = function
 and inline self = function
   | Italic l -> Italic (List.map (self.inline self) l)
   | Bold l -> Bold (List.map (self.inline self) l)
-  | String str -> String str
-  | Link str -> Link str
-  | ExtLink str -> ExtLink str
+  | String _ | Link _ as x -> x
+
 (**/**)
 
 (** A default mapper, which implements a "deep identity" mapping. *)
@@ -122,8 +121,8 @@ let link : char -> string -> string =
 let set_links doc =
   let inline self inl =
     match inl with
-    | ExtLink s -> String (link ' ' s)
-    | Link s -> String (link '|' s)
+    | Link (1, s) -> String (link ' ' s)
+    | Link (2, s) -> String (link '|' s)
     | _ -> default_mapper.inline self inl
   in
   let mapper = { default_mapper with inline } in

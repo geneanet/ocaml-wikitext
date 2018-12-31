@@ -58,8 +58,7 @@
 
 let hrule = "----" ['-']*
 let ws = [ ' ' '\t']
-let wordchar = [^''' '=' '*' '#' '\n' '[' ']' ':' ';' '|' '!' '{' '}' '<']
-let linkchar = [^'[' ']']
+let wordchar = [^ '\'' '=' '*' '#' '\n' '[' ':' ';' '|' '!' '{' '}' '<']
 
 let table_start = "{|"
 let table_end = "|}"
@@ -149,21 +148,11 @@ and main = parse
   | ws* '\n' as s {
       newline_token_or_str (s, EMPTYLINE) lexbuf
     }
-  | "[[" (linkchar+ as s) "]]" {
+  | '['+ as s {
       newline := false;
-      String.iter (update_lex_new_line lexbuf) s;
-      LINK s
+      link (Buffer.create 42) (String.length s) 0 lexbuf
     }
-  | "[" (linkchar+ as s) "]" {
-      newline := false;
-      String.iter (update_lex_new_line lexbuf) s;
-      EXTLINK s
-    }
-  | wordchar+ as s {
-      newline := false ;
-      STRING s
-    }
-  | "'"+ as s {
+  | '\''+ as s {
     newline := false ;
     match String.length s with
     | 2 -> ITALIC
@@ -171,6 +160,23 @@ and main = parse
     | 5 -> BOLDITALIC
     | _ -> STRING s
   }
+  | wordchar+ as s {
+      newline := false ;
+      STRING s
+    }
   | eof {
       EOF
+    }
+
+and link buffer len pos = parse
+  | ']' {
+      if pos = len - 1
+      then LINK (len, Buffer.contents buffer)
+      else link buffer len (pos + 1) lexbuf
+    }
+  | _ as c {
+      assert (pos = 0) ;
+      Buffer.add_char buffer c ;
+      update_lex_new_line lexbuf c ;
+      link buffer len pos lexbuf
     }

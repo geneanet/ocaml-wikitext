@@ -7,9 +7,10 @@
 %}
 
 %token<int> HEADER
-%token<Wktxt_type.order*int> LIST
-%token<Wktxt_type.def_type*int> DEFLIST
-%token<string> STRING LINK EXTLINK NOWIKI
+%token<Wktxt_type.order * int> LIST
+%token<Wktxt_type.def_type * int> DEFLIST
+%token<string> STRING NOWIKI
+%token <int * string> LINK
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
 %token TABLE_START TABLE_END TABLE_TITLE TABLE_NEW_LINE
@@ -26,7 +27,7 @@ document:
 
 block:
   | EMPTYLINE* b = block { b }
-  | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* { 
+  | h1 = HEADER i = inline(regular)+ HEADER EMPTYLINE* {
       header_id := !header_id + 1 ;
       [ Header (("header_id_" ^ string_of_int !header_id), h1, (List.flatten i)) ]
     }
@@ -102,8 +103,7 @@ noformat:
 inline(param):
   | s = STRING { [String s] }
   | s = NOWIKI { [String s] }
-  | s = LINK { [Link s] }
-  | s = EXTLINK { [ExtLink s] }
+  | x = LINK { [Link (fst x, snd x)] }
   | p = param { p }
 ;
 
