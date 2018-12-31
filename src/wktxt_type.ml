@@ -32,6 +32,3 @@ and inline =
   | Link of string
   | ExtLink of string
 [@@deriving show { with_path = false }]
-
-(* [@@deriving show] va créer automatique les fonctions
-   [show_document], [show_block], ... *)

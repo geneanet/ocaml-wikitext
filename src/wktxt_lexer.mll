@@ -2,7 +2,6 @@
   (**/**)
   open Wktxt_parser
 
-  let debug = false
   let newline = ref true
   let last_def_term_line = ref 0
   let last_def_term_depth = ref 0
@@ -92,18 +91,15 @@ and main = parse
   }
   | "<" {
       newline := false ;
-      if debug then Printf.printf "STRING : <\n" ;
       STRING "<"
     }
   | (ws* table_title ws*) as s {
-      if debug && !newline then Printf.printf "TABLE_TITLE\n" ;
       let tok = token_or_str (s, TABLE_TITLE) in table_or_str (s, tok)
     }
   | (ws* table_start ws*) as s '\n' {
       let tok = newline_token_or_str (s, TABLE_START) lexbuf in table_or_str (s, tok)
     }
   | (ws* table_end ws*) as s {
-      if debug && !newline then Printf.printf "TABLE_END\n" ;
       let tok = token_or_str (s, TABLE_END) in table_or_str (s, tok)
     }
   | (ws* table_new_line ws*) as s '\n' {
@@ -116,11 +112,9 @@ and main = parse
       let tok = str_or_token (s, TABLE_CELL TableHeader) in table_or_str (s, tok)
     }
   | (ws* cell ws*) as s {
-      if debug && !newline then Printf.printf "TABLE_CELL Cell\n" ;
       let tok = token_or_str (s, TABLE_CELL TableCell) in table_or_str (s, tok)
     }
   | (ws* header_cell ws*) as s {
-      if debug && !newline then Printf.printf "TABLE_CELL Header\n" ;
       let tok = token_or_str (s, TABLE_CELL TableHeader) in table_or_str (s, tok)
     }
   | (ws* (':'* ';') as s1 ws*) as s2 {
@@ -130,20 +124,16 @@ and main = parse
       token_or_str (s2, DEFLIST (Description, String.length s1))
     }
   | (ws* '='+ as s1 ws*) as s2 {
-      if debug then Printf.printf "HEADER START %d\n" (String.length s1) ;
       header_isopen := true ;
       token_or_str (s2, HEADER (String.length s1))
     }
   | (ws* '*'+ as s1 ws*) as s2 {
-      if debug then Printf.printf "LIST %d\n" (String.length s1) ;
       token_or_str (s2, LIST (Unordered, String.length s1))
     }
   | (ws* '#'+ as s1 ws*) as s2 {
-      if debug then Printf.printf "NUMLIST %d\n" (String.length s1);
       token_or_str (s2, LIST (Ordered, String.length s1))
     }
   | (ws* hrule ws*) as s {
-      if debug then Printf.printf "HRULE\n" ;
       token_or_str (s, HRULE )
     }
   | (ws* as sp1) ('='+ as s) (ws* as sp2) ('\n' | eof) {
@@ -151,7 +141,6 @@ and main = parse
       Lexing.new_line lexbuf ;
       if !header_isopen then begin
         header_isopen := false ;
-        if debug then Printf.printf "HEADER END %d \n" (String.length s) ;
         HEADER (String.length s)
       end
       else
@@ -162,19 +151,16 @@ and main = parse
     }
   | "[[" (linkchar+ as s) "]]" {
       newline := false;
-      if debug then Printf.printf "LINK : %s\n" s ;
       String.iter (update_lex_new_line lexbuf) s;
       LINK s
     }
   | "[" (linkchar+ as s) "]" {
       newline := false;
-      if debug then Printf.printf "EXTLINK : %s\n" s ;
       String.iter (update_lex_new_line lexbuf) s;
       EXTLINK s
     }
   | wordchar+ as s {
       newline := false ;
-      if debug then Printf.printf "STRING : %s\n" s ;
       STRING s
     }
   | "'"+ as s {
@@ -186,6 +172,5 @@ and main = parse
     | _ -> STRING s
   }
   | eof {
-      if debug then Printf.printf "EOF\n" ;
       EOF
     }
