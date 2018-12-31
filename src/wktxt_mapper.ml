@@ -60,6 +60,8 @@ let default_mapper =
 (** [toc doc]
     Compute the table of contents of [doc]. This table of contents
     is computed by looking at headers. First level header is omitted.
+    Table of contents is returned as un ordered list of links pointing
+    to title's anchors.
 *)
 let toc
   : document -> block option =
@@ -79,7 +81,8 @@ let toc
   | [] -> None
   | toc :: _ -> Some toc
 
-(**
+(** [set_toc doc]
+    Replace ["__TOC__"] in [doc] by the auto-generated table of contents.
 *)
 let set_toc doc =
   match toc doc with
@@ -113,8 +116,8 @@ let link : char -> string -> string =
 (**
    [set_links doc]
    Replace [Link] and [ExtLink] occurences by their HTML representation.
+   using {!val:link}.
    [Link] uses ['|'] as separator and [ExtLink] uses [' '].
-   using {!val:link}
 *)
 let set_links doc =
   let inline self inl =
@@ -124,4 +127,74 @@ let set_links doc =
     | _ -> default_mapper.inline self inl
   in
   let mapper = { default_mapper with inline } in
+  mapper.document mapper doc
+
+(** [normalize doc]
+    Concatenates following [Strings] elements together
+    and removes any trailing spaces at the end blocks. *)
+let normalize doc =
+  let rec concat = function
+    | [] -> []
+    | Bold inl :: tl -> Bold (concat inl) :: concat tl
+    | Italic inl :: tl -> Italic (concat inl) :: concat tl
+    | String s1 :: String s2 :: tl -> concat (String (s1 ^ s2) :: tl)
+    | hd :: tl -> hd :: concat tl
+  in
+  let trim_right str =
+    let start = String.length str - 1 in
+    let rec loop position =
+      if position < 0 then ""
+      else match String.get str position with
+        | '\n' | ' ' | '\t' -> loop (position - 1)
+        | _ ->
+          if position = start then str
+          else String.sub str 0 (position + 1)
+    in
+    loop start
+  in
+  let trim_left str =
+    let len = String.length str in
+    let start = 0 in
+    let rec loop position =
+      if position < len then match String.get str position with
+        | '\n' | ' ' | '\t' -> loop (position + 1)
+        | _ ->
+          if position = start then str
+          else String.sub str position (len - position)
+      else ""
+    in loop 0
+  in
+  let rec trim fst = function
+    | [] ->
+      []
+    | [ String s ] ->
+      if fst then [ String (s |> trim_left |> trim_right) ]
+      else [ String (trim_right s) ]
+    | String s as hd :: tl ->
+      if fst then String (s |> trim_left) :: trim false tl
+      else hd :: trim false tl
+    | hd :: tl ->
+      hd :: trim false tl
+  in
+  let norm contents = trim true (concat contents) in
+  let block self = function
+    | Header (id, lvl, content) ->
+      Header (id, lvl, norm content)
+    | Paragraph p ->
+      Paragraph (norm p)
+    | DefList l ->
+      DefList (List.map (fun (t, d) -> (norm t, List.map (self.block self) d)) l)
+    | Table (title, tbl) ->
+      Table (norm title, (List.map (List.map (self.table_block self)) tbl))
+    | b ->
+      default_mapper.block self b
+  and table_block _ = function
+    | TableHead content -> TableHead (norm content)
+    | TableItem content -> TableItem (norm content)
+  and inline self = function
+    | Italic l -> Italic (norm l)
+    | Bold l -> Bold (norm l)
+    | i -> default_mapper.inline self i
+  in
+  let mapper = { default_mapper with block ; table_block ; inline} in
   mapper.document mapper doc

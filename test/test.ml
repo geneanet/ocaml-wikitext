@@ -4,12 +4,15 @@ open Type
 
 let assert_equal expected input =
   let lexbuf = Lexing.from_string input in
-  let doc = doc_from_lexbuf lexbuf |> Mapper.set_toc |> Mapper.set_links in
-  assert_equal ~printer:show_document expected doc
+  doc_from_lexbuf lexbuf
+  |> Mapper.set_toc
+  |> Mapper.set_links
+  |> Mapper.normalize
+  |> assert_equal ~printer:show_document expected
 
 let quote_fail1 _ctx =
   assert_equal
-    [ Paragraph [ String "test " ; String ": " ; String "'" ; String "a" ; String "'" ]]
+    [ Paragraph [ String "test : 'a'" ]]
     "test : 'a'"
 
 let bold_1 _ctx =
@@ -49,11 +52,11 @@ let italic_1 _ctx =
 let italic_2 _ctx =
   assert_equal
     [ Paragraph [ String "Some "
-                ; Italic [ String "italicize text" ]
+                ; Italic [ String "italic text" ]
                 ; String " in the middle of the line"
                 ]
     ]
-    "Some ''italicize text'' in the middle of the line"
+    "Some ''italic text'' in the middle of the line"
 
 let italic_3 _ctx =
   assert_equal
@@ -79,28 +82,25 @@ let bolditalic_1 _ctx =
 
 let paragraph_1 _ctx =
   assert_equal
-    [ Paragraph [ String "Lorem ipsum" ; String "\n"] ;
+    [ Paragraph [ String "Lorem ipsum"] ;
       Paragraph [ String "dolores sit amet"]
     ]
-    "Lorem ipsum\n  \ndolores sit amet"
+    "Lorem ipsum  \n  \ndolores sit amet  "
 
 let paragraph_2 _ctx =
   assert_equal
-    [ Paragraph [ String "Lorem ipsum "
-                ; String "<"
-                ; String "= "
-                ; String "dolores sit amet" ] ]
+    [ Paragraph [ String "Lorem ipsum <= dolores sit amet" ] ]
     "Lorem ipsum <= dolores sit amet"
 
 let paragraph_3 _ctx =
   assert_equal
-    [ Paragraph [ String "x " ; String "<" ; String "=" ]
-    ; Header ("header_id_1", 1, [ String "Title " ] ) ]
+    [ Paragraph [ String "x <=" ]
+    ; Header ("header_id_1", 1, [ String "Title" ] ) ]
     "x <=\n= Title ="
 
 let paragraph_4 _ctx =
   assert_equal
-    [ Paragraph [ String "<" ; String "=" ; String "x" ] ]
+    [ Paragraph [ String "<=x" ] ]
     "<=x"
 
 let space_1 _ctx =
@@ -113,32 +113,26 @@ let space_1 _ctx =
 
 let space_2 _ctx =
   assert_equal
-    [ Paragraph [ String "Lorem ipsum" ; String "\n";
-                  String "dolores"
+    [ Paragraph [ String "Lorem ipsum\ndolores"
                 ]
     ]
     "Lorem ipsum\ndolores"
 
 let link_1 _ctx =
   assert_equal
-    [ Paragraph [ String "This is an "; String "<a href=\"www.test.com\">external link</a>"
-                ; String "."
-                ]
-    ]
+    [ Paragraph [ String "This is an <a href=\"www.test.com\">external link</a>." ] ]
     "This is an [www.test.com external link]."
 
 let link_2 _ctx =
   assert_equal
-    [ Paragraph [ String "This is a "; String "<a href=\"PageName\">link</a>"
-                ; String "."
-                ]
+    [ Paragraph [ String "This is a <a href=\"PageName\">link</a>." ]
     ]
     "This is a [[PageName|link]]."
 
 let list_1 _ctx =
   assert_equal
-    [ List [ [ Paragraph [ String "1" ; String "\n" ] ]
-           ; [ Paragraph [ String "2" ; String "\n" ] ]
+    [ List [ [ Paragraph [ String "1" ] ]
+           ; [ Paragraph [ String "2" ] ]
            ; [ Paragraph [ String "3" ] ]
         ]
     ]
@@ -148,10 +142,10 @@ let list_1 _ctx =
 
 let list_2 _ctx =
   assert_equal
-    [ List [ [ Paragraph [ String "1" ; String "\n" ]
-             ; List [ [ Paragraph [ String "1.1" ; String "\n" ] ]
-                    ; [ Paragraph [ String "1.2" ; String "\n" ]
-                      ; List [ [ Paragraph [ String "1.2.1" ; String "\n" ] ] ]
+    [ List [ [ Paragraph [ String "1" ]
+             ; List [ [ Paragraph [ String "1.1" ] ]
+                    ; [ Paragraph [ String "1.2" ]
+                      ; List [ [ Paragraph [ String "1.2.1" ] ] ]
                       ]
                  ]
              ]
@@ -189,15 +183,15 @@ let list_6 _ctx =
 
 let list_7 _ctx =
   assert_equal
-    [ List [ [ Paragraph [ String "1" ; String "\n" ]
+    [ List [ [ Paragraph [ String "1" ]
              ; List [ [ List [ [ Paragraph [ String "1.1.1" ] ] ] ] ] ] ] ]
     "* 1\n\
      *** 1.1.1"
 
 let list_8 _ctx =
   assert_equal
-    [ List [ [ Paragraph [ String "1" ; String "\n" ]
-             ; List [ [ List [ [ Paragraph [ String "1.1.1" ; String "\n"] ] ] ]
+    [ List [ [ Paragraph [ String "1" ]
+             ; List [ [ List [ [ Paragraph [ String "1.1.1"] ] ] ]
              ; [ Paragraph [ String "1.2" ] ] ] ]
            ]
     ]
@@ -207,16 +201,16 @@ let list_8 _ctx =
 
 let list_9 _ctx =
   assert_equal
-    [ List [ [ List [[Paragraph [ String "1" ; String "\n"]
+    [ List [ [ List [[Paragraph [ String "1"]
               ; List [[Paragraph [String "2"] ]] ]]]]
     ]
     "** 1\n\
      *** 2"
-  
+
 let list_mixed_1 _ctx =
   assert_equal
-    [ NumList [[ Paragraph [ String "1" ; String "\n" ] 
-                ; List [[ Paragraph [String "1.1" ; String "\n"] ]] ]
+    [ NumList [[ Paragraph [ String "1" ]
+                ; List [[ Paragraph [String "1.1"] ]] ]
               ; [ Paragraph [ String "2" ] ]
               ]
     ]
@@ -226,8 +220,8 @@ let list_mixed_1 _ctx =
 
 let list_mixed_2 _ctx =
   assert_equal
-    [ List [[ Paragraph [ String "1" ; String "\n" ] 
-                ; NumList [[ Paragraph [String "1.1" ; String "\n"] ]] ]
+    [ List [[ Paragraph [ String "1" ]
+                ; NumList [[ Paragraph [String "1.1"] ]] ]
               ; [ Paragraph [ String "2" ] ]
               ]
     ]
@@ -237,9 +231,9 @@ let list_mixed_2 _ctx =
 
 let list_mixed_3 _ctx = (* no warning should be written on STDERR *)
   assert_equal
-    [ 
-        List [[ Paragraph [ String "1" ; String "\n" ]]]
-      ; NumList [[ Paragraph [ String "2" ; String "\n" ]]]
+    [
+        List [[ Paragraph [ String "1" ]]]
+      ; NumList [[ Paragraph [ String "2" ]]]
       ; List [[ Paragraph [ String "3" ]]]
     ]
     "* 1\n\
@@ -248,9 +242,9 @@ let list_mixed_3 _ctx = (* no warning should be written on STDERR *)
 
 let list_mixed_4 _ctx = (* no warning should be written on STDERR *)
   assert_equal
-    [ 
-        NumList [[ Paragraph [ String "1" ; String "\n" ]]]
-      ; List [[ Paragraph [ String "2" ; String "\n" ]]]
+    [
+        NumList [[ Paragraph [ String "1" ]]]
+      ; List [[ Paragraph [ String "2" ]]]
       ; NumList [[ Paragraph [ String "3" ]]]
     ]
     "# 1\n\
@@ -259,9 +253,9 @@ let list_mixed_4 _ctx = (* no warning should be written on STDERR *)
 
 let list_mixed_5 _ctx = (* no warning should be written on STDERR *)
   assert_equal
-    [ 
-        List [[ Paragraph [ String "1" ; String "\n"] ; 
-              NumList [[ Paragraph [ String "1.1" ; String "\n" ]]]
+    [
+        List [[ Paragraph [ String "1"] ;
+              NumList [[ Paragraph [ String "1.1" ]]]
              ]]
       ; NumList [[ Paragraph [ String "3" ]]]
     ]
@@ -272,8 +266,8 @@ let list_mixed_5 _ctx = (* no warning should be written on STDERR *)
 let list_mixed_warning_1 _ctx = (* a warning should be written on STDERR for this test *)
   assert_equal
     [
-        List  [[ Paragraph [String "1" ; String "\n"]
-                ; NumList [ [ Paragraph [ String "1.1" ; String "\n" ]]
+        List  [[ Paragraph [String "1"]
+                ; NumList [ [ Paragraph [ String "1.1" ]]
                             ; [ Paragraph [ String "1.2" ]] ]
               ]]
     ]
@@ -283,13 +277,13 @@ let list_mixed_warning_1 _ctx = (* a warning should be written on STDERR for thi
 
 let def_1 _ctx =
   assert_equal
-    [ DefList [ ([String "t1" ; String ":" ; String "term"], [])
+    [ DefList [ ([String "t1:term"], [])
               ] ]
     ";t1:term"
 
 let def_2 _ctx =
   assert_equal
-    [ DefList [ ([String "t1" ; String "\n"], [
+    [ DefList [ ([String "t1"], [
                     Paragraph [ String "d1" ]
                   ])
               ] ]
@@ -298,8 +292,8 @@ let def_2 _ctx =
 
 let def_3 _ctx =
   assert_equal
-    [ DefList [ ([String "t1" ; String "\n"],
-    [ Paragraph [ String "d1" ; String "\n" ]
+    [ DefList [ ([String "t1"],
+    [ Paragraph [ String "d1" ]
                   ; Paragraph [ String "d2" ]
                   ])
               ] ]
@@ -321,16 +315,16 @@ let def_5 _ctx =
 
 let def_6 _ctx =
   assert_equal
-    [ DefList [ ([String "t1" ; String ":" ; String "d1" ; String "\n"], [ Paragraph [ String "d2" ]])]
+    [ DefList [ ([String "t1:d1"], [ Paragraph [ String "d2" ]])]
     ]
     ";t1:d1\n\
      :d2"
 
 let def_7 _ctx =
   assert_equal
-    [ DefList [ ([String "tt" ; String ":" ; String "2" ; String "\n"], [
-                DefList [ ( [String "t1" ; String ":" ; String "1" ; String "\n"],
-                            [ Paragraph [ String "dd" ; String ":" ; String "d1.1" ]])
+    [ DefList [ ([String "tt:2"], [
+                DefList [ ( [String "t1:1"],
+                            [ Paragraph [ String "dd:d1.1" ]])
                         ]]
                 )
               ]
@@ -341,20 +335,20 @@ let def_7 _ctx =
 
 let table_empty_cell_1 _ctx =
   assert_equal
-    [ Table ([String "Titre" ; String "\n"], [  [ TableItem [String "\n"]
-                                                ; TableHead [String "Titre A" ; String "\n"]
-                                                ; TableHead [String "Titre B" ; String "\n"]
-                                                ; TableHead [String "Titre C" ; String "\n"]
+    [ Table ([String "Titre"], [  [ TableItem [String ""]
+                                                ; TableHead [String "Titre A"]
+                                                ; TableHead [String "Titre B"]
+                                                ; TableHead [String "Titre C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 1" ; String "\n"]
-                                                ; TableItem [String "Data 1A" ; String "\n"]
-                                                ; TableItem [String "Data 1B" ; String "\n"]
-                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 1"]
+                                                ; TableItem [String "Data 1A"]
+                                                ; TableItem [String "Data 1B"]
+                                                ; TableItem [String "Data 1C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 2" ; String "\n"]
-                                                ; TableItem [String "Data 2A" ; String "\n"]
-                                                ; TableItem [String "Data 2B" ; String "\n"]
-                                                ; TableItem [String "Data 2C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 2"]
+                                                ; TableItem [String "Data 2A"]
+                                                ; TableItem [String "Data 2B"]
+                                                ; TableItem [String "Data 2C"]
                                                 ]
                                              ])
     ]
@@ -379,20 +373,20 @@ let table_empty_cell_1 _ctx =
 
 let table_empty_cell_2 _ctx =
   assert_equal
-    [ Table ([String "Titre" ; String "\n"], [  [ TableItem []
-                                                ; TableHead [String "Titre A "]
-                                                ; TableHead [String "Titre B "]
-                                                ; TableHead [String "Titre C" ; String "\n"]
+    [ Table ([String "Titre"], [  [ TableItem []
+                                                ; TableHead [String "Titre A"]
+                                                ; TableHead [String "Titre B"]
+                                                ; TableHead [String "Titre C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 1" ; String "\n"]
-                                                ; TableItem [String "Data 1A "]
-                                                ; TableItem [String "Data 1B "]
-                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 1"]
+                                                ; TableItem [String "Data 1A"]
+                                                ; TableItem [String "Data 1B"]
+                                                ; TableItem [String "Data 1C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 2" ; String "\n"]
-                                                ; TableItem [String "Data 2A "]
-                                                ; TableItem [String "Data 2B "]
-                                                ; TableItem [String "Data 2C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 2"]
+                                                ; TableItem [String "Data 2A"]
+                                                ; TableItem [String "Data 2B"]
+                                                ; TableItem [String "Data 2C"]
                                                 ]
                                              ])
     ]
@@ -411,19 +405,19 @@ let table_empty_cell_2 _ctx =
 let table_no_title _ctx =
   assert_equal
     [ Table ([], [  [ TableItem []
-                                                ; TableHead [String "Titre A" ; String "\n"]
-                                                ; TableHead [String "Titre B "]
-                                                ; TableHead [String "Titre C" ; String "\n"]
+                                                ; TableHead [String "Titre A"]
+                                                ; TableHead [String "Titre B"]
+                                                ; TableHead [String "Titre C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 1" ; String "\n"]
-                                                ; TableItem [String "Data 1A "]
-                                                ; TableItem [String "Data 1B "]
-                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 1"]
+                                                ; TableItem [String "Data 1A"]
+                                                ; TableItem [String "Data 1B"]
+                                                ; TableItem [String "Data 1C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 2" ; String "\n"]
-                                                ; TableItem [String "Data 2A "]
-                                                ; TableItem [String "Data 2B "]
-                                                ; TableHead [String "Data 2C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 2"]
+                                                ; TableItem [String "Data 2A"]
+                                                ; TableItem [String "Data 2B"]
+                                                ; TableHead [String "Data 2C"]
                                                 ]
                                              ])
     ]
@@ -441,20 +435,20 @@ let table_no_title _ctx =
 
 let table_no_first_row _ctx =
   assert_equal
-    [ Table ([String "Table Title" ; String "\n"], [  [ TableItem []
-                                                ; TableHead [String "Titre A" ; String "\n"]
-                                                ; TableHead [String "Titre B "]
-                                                ; TableHead [String "Titre C" ; String "\n"]
+    [ Table ([String "Table Title"], [  [ TableItem []
+                                                ; TableHead [String "Titre A"]
+                                                ; TableHead [String "Titre B"]
+                                                ; TableHead [String "Titre C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 1" ; String "\n"]
-                                                ; TableItem [String "Data 1A "]
-                                                ; TableItem [String "Data 1B "]
-                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 1"]
+                                                ; TableItem [String "Data 1A"]
+                                                ; TableItem [String "Data 1B"]
+                                                ; TableItem [String "Data 1C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 2" ; String "\n"]
-                                                ; TableItem [String "Data 2A "]
-                                                ; TableItem [String "Data 2B "]
-                                                ; TableHead [String "Data 2C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 2"]
+                                                ; TableItem [String "Data 2A"]
+                                                ; TableItem [String "Data 2B"]
+                                                ; TableHead [String "Data 2C"]
                                                 ]
                                              ])
     ]
@@ -473,19 +467,19 @@ let table_no_first_row _ctx =
 let table_no_title_no_first_row _ctx =
   assert_equal
     [ Table ([], [  [ TableItem []
-                                                ; TableHead [String "Titre A" ; String "\n"]
-                                                ; TableHead [String "Titre B "]
-                                                ; TableHead [String "Titre C" ; String "\n"]
+                                                ; TableHead [String "Titre A"]
+                                                ; TableHead [String "Titre B"]
+                                                ; TableHead [String "Titre C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 1" ; String "\n"]
-                                                ; TableItem [String "Data 1A "]
-                                                ; TableItem [String "Data 1B "]
-                                                ; TableItem [String "Data 1C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 1"]
+                                                ; TableItem [String "Data 1A"]
+                                                ; TableItem [String "Data 1B"]
+                                                ; TableItem [String "Data 1C"]
                                                 ]
-                                              ; [ TableHead [String "Titre 2" ; String "\n"]
-                                                ; TableItem [String "Data 2A "]
-                                                ; TableItem [String "Data 2B "]
-                                                ; TableHead [String "Data 2C" ; String "\n"]
+                                              ; [ TableHead [String "Titre 2"]
+                                                ; TableItem [String "Data 2A"]
+                                                ; TableItem [String "Data 2B"]
+                                                ; TableHead [String "Data 2C"]
                                                 ]
                                              ])
     ]
@@ -502,28 +496,26 @@ let table_no_title_no_first_row _ctx =
 
 let special_chars1 _ctx =
   assert_equal
-    [ Paragraph [ String "Lorem "
-                ; String "|| "
-                ; String "ipsum"
+    [ Paragraph [ String "Lorem || ipsum"
                 ]
     ]
     "Lorem || ipsum"
 
 let special_chars2 _ctx =
   assert_equal
-    [ Paragraph [String "Lorem " ; String ": " ; String "ipsum"]
+    [ Paragraph [String "Lorem : ipsum"]
     ]
     "Lorem : ipsum"
 
 let special_chars3 _ctx =
   assert_equal
-    [ Paragraph [String "Lorem " ; String "!! " ; String "ipsum"]
+    [ Paragraph [String "Lorem !! ipsum"]
     ]
     "Lorem !! ipsum"
 
 let special_chars4 _ctx =
   assert_equal
-    [ Paragraph [String "Lorem " ; String "== " ; String "ipsum"]
+    [ Paragraph [String "Lorem == ipsum"]
     ]
     "Lorem == ipsum"
 
@@ -535,12 +527,17 @@ let nowiki_1 _ctx =
 
 let nowiki_2 _ctx =
   assert_equal
-    [ Paragraph [ String "''test''" ; String " "
-                ; Bold [String "gras"] ; String " "
-                ; String "'''pas gras'''"
+    [ Paragraph [ String "''test'' "
+                ; Bold [String "gras"] ; String " '''pas gras'''"
                 ]
     ]
     "<nowiki>''test''</nowiki> '''gras''' <nowiki>'''pas gras'''</nowiki>"
+
+let normalize_1 _ctx =
+  assert_equal
+    [ Paragraph [ String "test " ; Bold [ String "test : test"] ; String " test : test" ]
+    ]
+    "test '''test : test''' test : test"
 
 let () =
   run_test_tt_main
@@ -592,4 +589,5 @@ let () =
                   ; "special_chars4" >:: special_chars4
                   ; "nowiki_1" >:: nowiki_1
                   ; "nowiki_2" >:: nowiki_2
+                  ; "normalize_1" >:: normalize_1
                   ])

@@ -4,7 +4,7 @@ module Mapper = Wktxt_mapper
 (** [ParsingError (line, column, lexeme)]  *)
 exception ParsingError of int * int * string
 
-(** [doc_from_lexbuf lex] parse [lex] and return the resulting {!type:Type.doc}.
+(** [doc_from_lexbuf lex] parse [lex] and return the resulting {!type:Type.document}.
     Raise {!exception:ParsingError} in case of failure *)
 let doc_from_lexbuf : Lexing.lexbuf -> Type.document = fun lexbuf ->
   try
@@ -42,8 +42,10 @@ let doc_from_file
   close_in chan ;
   doc
 
-(** [output_document fn doc]
-    Ouput [doc] as HTML, using [fn] to print each part of it. *)
+(** [output_document out doc]
+    Run through the parsed tree [doc]
+    and print its content translated into HTML code using the [out] function.
+*)
 let output_document : (string -> unit) -> Type.document -> unit =
   Wktxt_output.output_document
 
