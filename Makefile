@@ -5,6 +5,9 @@ DUNE=dune
 build:
 	$(DUNE) build
 
+doc:
+	$(DUNE) build @doc
+
 runtest:
 	$(DUNE) build @runtest
 

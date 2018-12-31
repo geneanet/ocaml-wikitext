@@ -1,4 +1,5 @@
 %{
+  (**/**)
   open Wktxt_type
   open Wktxt_parsing_functions
 
@@ -42,7 +43,7 @@ block:
   | l = pair(LIST, inline(regular)+)+ EMPTYLINE* {
       match l with
       | [] -> []
-      | ((list_type, _), _) :: _ -> List.flatten (parse_list 0 l list_type)
+      | ((list_type, _), _) :: _ -> parse_list 0 l list_type
     }
   | l = pair(DEFLIST, inline(regular)+)+ EMPTYLINE* {
       [DefList (get_def_blocks l 1)]

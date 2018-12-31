@@ -12,7 +12,6 @@
             wktxt_parsing_functions
             wktxt_output wikitext)
   (preprocess (pps ppx_deriving.show))
-  (wrapped false)
 )
 
 (executable

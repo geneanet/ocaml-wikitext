@@ -1,4 +1,5 @@
 {
+  (**/**)
   open Wktxt_parser
 
   let debug = false

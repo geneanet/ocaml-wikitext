@@ -1,3 +1,5 @@
+(**/**)
+
 open Wktxt_type
 (* pair_list : ((bool, int), inlines) *)
 
@@ -6,7 +8,7 @@ let rec get_pair_list_from_depth depth pair_list =
   | ((_, d), _) :: tl when d > depth -> get_pair_list_from_depth depth tl
   | list -> list
 
-let rec parse_list depth pair_list list_type :(block list list)=
+let rec parse_list depth pair_list list_type : block list list =
   let build_list l_type l_content =
     if l_type = Unordered then List l_content
     else NumList l_content
@@ -19,7 +21,7 @@ let rec parse_list depth pair_list list_type :(block list list)=
       ;
     begin match tl1 with
       | ((next_type, d'), _) :: tl2 when next_depth < d' ->
-        [Paragraph (List.flatten inlines) ; build_list next_type (parse_list (depth + 1) tl1 next_type )] 
+        [Paragraph (List.flatten inlines) ; build_list next_type (parse_list (depth + 1) tl1 next_type )]
           :: parse_list depth (get_pair_list_from_depth depth tl2) list_type
       | _ ->
         [Paragraph (List.flatten inlines)]
@@ -36,6 +38,10 @@ let rec parse_list depth pair_list list_type :(block list list)=
     [build_list next_type (parse_list (depth + 1) pair_list next_type)]
       :: parse_list depth (get_pair_list_from_depth depth tl) list_type
   | _ -> []
+
+let parse_list d l t =
+ parse_list d l t
+ |> List.flatten
 
 let rec get_next_term_list l depth =
   match l with
@@ -55,7 +61,7 @@ let rec get_descriptions l depth :(block list)=
 and get_def_blocks l depth :(def_block list)=
   match l with
   | ((cur_type, cur_depth), inlines) :: tl when cur_type = Term && cur_depth = depth ->
-    (List.flatten inlines, get_descriptions tl depth) :: 
+    (List.flatten inlines, get_descriptions tl depth) ::
       get_def_blocks (get_next_term_list tl depth) depth
   | ((_, cur_depth), _) :: tl when cur_depth >= depth ->
     ([], get_descriptions l depth) :: get_def_blocks (get_next_term_list tl depth) depth

@@ -6,7 +6,7 @@ exception ParsingError of int * int * string
 
 (** [doc_from_lexbuf lex] parse [lex] and return the resulting {!type:Type.doc}.
     Raise {!exception:ParsingError} in case of failure *)
-let doc_from_lexbuf lexbuf =
+let doc_from_lexbuf : Lexing.lexbuf -> Type.document = fun lexbuf ->
   try
     Wktxt_lexer.newline := true ;
     Wktxt_lexer.last_def_term_line := 0 ;
@@ -22,33 +22,52 @@ let doc_from_lexbuf lexbuf =
     raise (ParsingError (line, col, lexeme))
 
 (** See {!val:doc_from_lexbuf} *)
-let doc_from_string string =
+let doc_from_string
+  : string -> Type.document =
+  fun string ->
   doc_from_lexbuf (Lexing.from_string string)
 
 (** See {!val:doc_from_lexbuf} *)
-let doc_from_channel chan =
+let doc_from_channel
+  : in_channel -> Type.document =
+  fun chan ->
   doc_from_lexbuf (Lexing.from_channel chan)
 
 (** See {!val:doc_from_lexbuf} *)
-let doc_from_file file =
+let doc_from_file
+  : string -> Type.document =
+  fun file ->
   let chan = open_in file in
   let doc = doc_from_channel chan in
   close_in chan ;
   doc
 
-let output_document =
+(** [output_document fn doc]
+    Ouput [doc] as HTML, using [fn] to print each part of it. *)
+let output_document : (string -> unit) -> Type.document -> unit =
   Wktxt_output.output_document
 
-let doc_to_string doc =
+(** [doc_to_string doc]
+    Return the HTML version of doc, as a string. *)
+let doc_to_string
+  : Type.document -> string =
+  fun doc ->
   let buffer = Buffer.create 4096 in
   let () = output_document (Buffer.add_string buffer) doc in
   Buffer.contents buffer
 
-let doc_to_chan doc chan =
-  let str_doc = doc_to_string doc in
-  output_string chan str_doc
+(** [doc_to_chan chan doc]
+    Print [doc] (as HTML) to [chan].
+    See {!val:output_document} *)
+let doc_to_chan
+  : out_channel -> Type.document -> unit =
+  fun chan doc ->
+  Wktxt_output.output_document (output_string chan) doc
 
-let doc_to_file doc filename =
+(** [doc_to_file filename doc]
+    Create (or open and truncate) [filename] and write [doc] (as HTML) into it.
+    See {!val:output_document} *)
+let doc_to_file filename doc =
   let chan = open_out filename in
-  let () = doc_to_chan doc chan in
+  let () = doc_to_chan chan doc in
   close_out chan

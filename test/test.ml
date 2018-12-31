@@ -1,11 +1,11 @@
 open OUnit2
-open Wktxt_type
 open Wikitext
+open Type
 
 let assert_equal expected input =
   let lexbuf = Lexing.from_string input in
-  let doc = doc_from_lexbuf lexbuf |> Mapper.set_table_of_content |> Mapper.set_links in
-  assert_equal ~printer:Wktxt_type.show_document expected doc
+  let doc = doc_from_lexbuf lexbuf |> Mapper.set_toc |> Mapper.set_links in
+  assert_equal ~printer:show_document expected doc
 
 let quote_fail1 _ctx =
   assert_equal
@@ -121,7 +121,7 @@ let space_2 _ctx =
 
 let link_1 _ctx =
   assert_equal
-    [ Paragraph [ String "This is an "; ExtLink "<a href=\"www.test.com\">external link</a>"
+    [ Paragraph [ String "This is an "; String "<a href=\"www.test.com\">external link</a>"
                 ; String "."
                 ]
     ]
@@ -129,7 +129,7 @@ let link_1 _ctx =
 
 let link_2 _ctx =
   assert_equal
-    [ Paragraph [ String "This is a "; Link "PageName|link"
+    [ Paragraph [ String "This is a "; String "<a href=\"PageName\">link</a>"
                 ; String "."
                 ]
     ]
