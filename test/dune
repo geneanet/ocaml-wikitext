@@ -1,7 +1,8 @@
 (executable
   (name test)
-  (libraries wikitext oUnit)
+  (libraries ppx_deriving.show oUnit wikitext)
   (modules test)
+  (preprocess (staged_pps ppx_import ppx_deriving.show))
 )
 
 (executable
@@ -14,5 +15,5 @@
 
 (alias
   (name runtest)
-  (action  (run ./test.exe) )
+  (action (run ./test.exe) )
 )

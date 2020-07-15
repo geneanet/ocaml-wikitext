@@ -1,6 +1,14 @@
 open OUnit2
 open Wikitext
-open Type
+
+type order = [%import: Wikitext.Type.order] [@@deriving show { with_path = false }]
+and def_and = [%import: Wikitext.Type.def_type] [@@deriving show { with_path = false }]
+and table_cell = [%import: Wikitext.Type.table_cell] [@@deriving show { with_path = false }]
+and document = [%import: Wikitext.Type.document] [@@deriving show { with_path = false }]
+and block = [%import: Wikitext.Type.block] [@@deriving show { with_path = false }]
+and table_block = [%import: Wikitext.Type.table_block] [@@deriving show { with_path = false }]
+and def_block = [%import: Wikitext.Type.def_block] [@@deriving show { with_path = false }]
+and inline = [%import: Wikitext.Type.inline] [@@deriving show { with_path = false }]
 
 let assert_equal expected input =
   let lexbuf = Lexing.from_string input in
@@ -8,7 +16,7 @@ let assert_equal expected input =
   |> Mapper.set_toc
   |> Mapper.set_links
   |> Mapper.normalize
-  |> assert_equal ~printer:show_document expected
+  |> assert_equal ~printer:[%derive.show: document] expected
 
 let quote_fail1 _ctx =
   assert_equal

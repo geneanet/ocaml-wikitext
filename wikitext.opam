@@ -13,7 +13,8 @@ remove: ["ocamlfind" "remove" "wikitext"]
 depends: [
   "dune" { build & >= "1.5.1" }
   "menhir"
-  "ppx_deriving"
+  "ppx_deriving" {with-test}
+  "ppx_import" {with-test}
   "ounit" {with-test & >= "2.0.0"}
   "js_of_ocaml" {with-test}
 ]
