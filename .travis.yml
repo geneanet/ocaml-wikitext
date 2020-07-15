@@ -2,16 +2,25 @@ sudo: required
 
 language: c
 
-os:
-  - linux
-
-env:
-  - OCAML_VERSION=4.05 OPAM_VERSION=2.0.0
-  - OCAML_VERSION=4.06 OPAM_VERSION=2.0.0
-  - OCAML_VERSION=4.07 OPAM_VERSION=2.0.0
-
-matrix:
+jobs:
   fast_finish: true
+  include:
+  - os: linux
+    env: OCAML_VERSION=4.05
+  - os: linux
+    env: OCAML_VERSION=4.06
+  - os: linux
+    env: OCAML_VERSION=4.07
+  - os: linux
+    env: OCAML_VERSION=4.08
+  - os: linux
+    env: OCAML_VERSION=4.09
+  - os: linux
+    env: OCAML_VERSION=4.10
+  - os: osx
+    env: OCAML_VERSION=4.09
+  - os: freebsd
+    env: OCAML_VERSION=4.09
 
 install:
   - wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-ocaml.sh
