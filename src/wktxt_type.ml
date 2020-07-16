@@ -14,6 +14,7 @@ and block =
   | DefList of def_block list
   | Table of inline list * table_block list list
   | Hrule
+  | NoWikiBlock of string
 
 and table_block =
   | TableHead of inline list
@@ -26,3 +27,4 @@ and inline =
   | Italic of inline list
   | String of string
   | Link of int * string
+  | NoWiki of string

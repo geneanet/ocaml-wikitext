@@ -529,14 +529,17 @@ let special_chars4 _ctx =
 
 let nowiki_1 _ctx =
   assert_equal
-    [ Paragraph [ String "[::;] d]{''' ''''' ''}----||"]
+    [ NoWikiBlock "[::;] d]{''' ''''' ''}----||"
     ]
     "<nowiki>[::;] d]{''' ''''' ''}----||</nowiki>"
 
 let nowiki_2 _ctx =
   assert_equal
-    [ Paragraph [ String "''test'' "
-                ; Bold [String "gras"] ; String " '''pas gras'''"
+    [ Paragraph [ NoWiki "''test''"
+                ; String " "
+                ; Bold [ String "gras" ]
+                ; String " "
+                ; NoWiki "'''pas gras'''"
                 ]
     ]
     "<nowiki>''test''</nowiki> '''gras''' <nowiki>'''pas gras'''</nowiki>"

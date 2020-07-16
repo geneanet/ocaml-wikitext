@@ -35,7 +35,7 @@ and block self = function
   | Table (title, content_list) ->
       Table ((List.map (self.inline self) title)
              , (List.map (fun l -> List.map (self.table_block self) l) content_list))
-  | Hrule -> Hrule
+  | Hrule | NoWikiBlock _ as x -> x
 
 and table_block self = function
   | TableHead content -> TableHead (List.map (self.inline self) content)
@@ -44,7 +44,7 @@ and table_block self = function
 and inline self = function
   | Italic l -> Italic (List.map (self.inline self) l)
   | Bold l -> Bold (List.map (self.inline self) l)
-  | String _ | Link _ as x -> x
+  | NoWiki _ | String _ | Link _ as x -> x
 
 (**/**)
 
@@ -60,7 +60,7 @@ let rec noformat inlines =
   let aux = function
     | Bold x -> noformat x
     | Italic x -> noformat x
-    | String _ | Link _ as x -> [ x ]
+    | NoWiki _ | String _ | Link _ as x -> [ x ]
   in
   List.flatten (List.map aux inlines)
 

@@ -16,7 +16,7 @@ and output_inline out inl :(unit)=
     display_item output_inline "b" out content
   | Italic (content) ->
     display_item output_inline "i" out content
-  | String str | Link (_, str) -> out str
+  | NoWiki str | String str | Link (_, str) -> out str
 
 and output_block out blck :(unit)=
   match blck with
@@ -48,3 +48,4 @@ and output_block out blck :(unit)=
     in
     display_item (display_item output_table_block "tr") "tbody" out content_list ;
     out "</table>"
+  | NoWikiBlock s -> out s

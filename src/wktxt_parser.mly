@@ -51,7 +51,10 @@ block:
       [ Hrule ]
     }
   | i = inline(regular)+ EMPTYLINE* {
-      [ Paragraph (List.flatten i) ]
+      [ match (List.flatten i) with
+        | [ NoWiki s ] -> NoWikiBlock s
+        | x -> Paragraph x
+      ]
     }
 ;
 
@@ -100,7 +103,7 @@ noformat:
 
 inline(param):
   | s = STRING { [String s] }
-  | s = NOWIKI { [String s] }
+  | s = NOWIKI { [NoWiki s] }
   | x = LINK { [Link (fst x, snd x)] }
   | p = param { p }
 ;

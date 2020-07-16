@@ -80,6 +80,7 @@ rule nowiki buf = parse
       NOWIKI (s)
     }
   | _ as c {
+      update_lex_new_line lexbuf c ;
       Buffer.add_char buf c;
       nowiki buf lexbuf
     }
