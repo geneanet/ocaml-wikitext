@@ -15,6 +15,7 @@
 (executable
   (name wktxt_cmdline)
   (public_name wktxt_cmdline)
+  (package wikitext)
   (modules wktxt_cmdline)
   (libraries wikitext)
 )
