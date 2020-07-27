@@ -165,6 +165,10 @@ and main = parse
       newline := false ;
       STRING s
     }
+  | _ as c {
+      newline := false ;
+      CHAR c
+  }
   | eof {
       EOF
     }

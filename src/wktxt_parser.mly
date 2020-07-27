@@ -9,6 +9,7 @@
 %token<Wktxt_type.order * int> LIST
 %token<Wktxt_type.def_type * int> DEFLIST
 %token<string> STRING NOWIKI
+%token<char> CHAR
 %token <int * string> LINK
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
@@ -103,6 +104,7 @@ noformat:
 
 inline(param):
   | s = STRING { [String s] }
+  | c = CHAR { [String (String.make 1 c)] }
   | s = NOWIKI { [NoWiki s] }
   | x = LINK { [Link (fst x, snd x)] }
   | p = param { p }
