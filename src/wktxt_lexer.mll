@@ -85,10 +85,24 @@ rule nowiki buf = parse
       nowiki buf lexbuf
     }
 
+and comment = parse
+  | "-->" {
+      newline := false;
+      main lexbuf
+    }
+
+  | _ as c {
+      update_lex_new_line lexbuf c ;
+      comment lexbuf
+    }
+
 and main = parse
   | "<nowiki>" {
     nowiki (Buffer.create 1024) lexbuf
   }
+  | "<!--" {
+      comment lexbuf
+    }
   | "<" {
       newline := false ;
       STRING "<"
