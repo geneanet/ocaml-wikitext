@@ -72,34 +72,37 @@ table_line:
 
 (* inlines *)
 
+(* Closing tag is optionnal in order to handle bad input.
+   Menhir resolve this conflict by shifting by default so this is OK
+*)
 regular:
-  | ITALIC i = inline(noformat)+ ITALIC { [Italic (List.flatten i)] }
-  | BOLD i = inline(noformat)+ BOLD { [Bold (List.flatten i)] }
-  | BOLDITALIC i = inline(noformat)+ BOLDITALIC {
+  | ITALIC i = inline(noformat)+ ITALIC? { [Italic (List.flatten i)] }
+  | BOLD i = inline(noformat)+ BOLD? { [Bold (List.flatten i)] }
+  | BOLDITALIC i = inline(noformat)+ BOLDITALIC? {
       [Bold [ Italic (List.flatten i) ]]
     }
-  | BOLDITALIC i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ BOLD {
+  | BOLDITALIC i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ BOLD? {
       [Bold (Italic (List.flatten i1) :: (List.flatten i2))]
     }
-  | BOLDITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ ITALIC {
+  | BOLDITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ ITALIC? {
       [Italic (Bold (List.flatten i1) :: (List.flatten i2))]
     }
-  | ITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ BOLDITALIC {
+  | ITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ BOLDITALIC? {
       [Italic ( (List.flatten i1) @ [Bold (List.flatten i2)] )]
     }
-  | BOLD i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ BOLDITALIC {
+  | BOLD i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ BOLDITALIC? {
       [Bold ( (List.flatten i1) @ [Italic (List.flatten i2)] )]
     }
-  | BOLD i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ ITALIC i3 = inline(noformat)+ BOLD {
+  | BOLD i1 = inline(noformat)+ ITALIC i2 = inline(noformat)+ ITALIC i3 = inline(noformat)+ BOLD? {
       [Bold (List.flatten i1 @ [Italic (List.flatten i2)] @ List.flatten i3)]
     }
-  | ITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ BOLD i3 = inline(noformat)+ ITALIC {
+  | ITALIC i1 = inline(noformat)+ BOLD i2 = inline(noformat)+ BOLD i3 = inline(noformat)+ ITALIC? {
       [Italic (List.flatten i1 @ [Bold (List.flatten i2)] @ List.flatten i3)]
     }
-  | BOLD i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ ITALIC {
+  | BOLD i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ ITALIC? {
       [Bold (List.flatten i1) ; Italic (List.flatten i2)]
     }
-  | ITALIC i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ BOLD {
+  | ITALIC i1 = inline(noformat)+ BOLDITALIC i2 = inline(noformat)+ BOLD? {
       [Italic (List.flatten i1) ; Bold (List.flatten i2)]
     }
 ;
