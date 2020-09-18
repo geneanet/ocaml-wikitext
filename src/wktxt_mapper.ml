@@ -132,8 +132,11 @@ let link : char -> string -> string =
 let set_links doc =
   let inline self inl =
     match inl with
-    | Link (1, s) -> String (link ' ' s)
-    | Link (2, s) -> String (link '|' s)
+    | Link s ->
+      (* Link "" is not possible *)
+      if String.get s 0 = '[' && String.get s (String.length s - 1) = ']'
+      then String (link '|' @@ String.sub s 1 @@ String.length s - 2)
+      else String (link ' ' s)
     | _ -> default_mapper.inline self inl
   in
   let mapper = { default_mapper with inline } in

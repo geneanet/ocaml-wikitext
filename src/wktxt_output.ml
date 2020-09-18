@@ -16,7 +16,7 @@ and output_inline out inl :(unit)=
     display_item output_inline "b" out content
   | Italic (content) ->
     display_item output_inline "i" out content
-  | NoWiki str | String str | Link (_, str) -> out str
+  | NoWiki str | String str | Link str -> out str
 
 and output_block out blck :(unit)=
   match blck with

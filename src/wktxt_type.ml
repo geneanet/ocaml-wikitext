@@ -26,5 +26,5 @@ and inline =
   | Bold of inline list
   | Italic of inline list
   | String of string
-  | Link of int * string
+  | Link of string
   | NoWiki of string

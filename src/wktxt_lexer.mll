@@ -209,9 +209,11 @@ and main = parse
   | ws* '\n' as s {
       newline_token_or_str (s, EMPTYLINE) lexbuf
     }
-  | '['+ as s {
+  | ('['+ as pre) ([^ '[' ']' '\n' ]+ as s) (']'+ as post) {
       newline := false;
-      link (Buffer.create 42) (String.length s) 0 lexbuf
+      LINK (String.sub pre 1 (String.length pre - 1)
+            ^ s
+            ^ String.sub post 1 (String.length post - 1))
     }
   | '\''+ as s {
     newline := false ;
@@ -231,17 +233,4 @@ and main = parse
   }
   | eof {
       EOF
-    }
-
-and link buffer len pos = parse
-  | ']' {
-      if pos = len - 1
-      then LINK (len, Buffer.contents buffer)
-      else link buffer len (pos + 1) lexbuf
-    }
-  | _ as c {
-      assert (pos = 0) ;
-      Buffer.add_char buffer c ;
-      update_lex_new_line lexbuf c ;
-      link buffer len pos lexbuf
     }

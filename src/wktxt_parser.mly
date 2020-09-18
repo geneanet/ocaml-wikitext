@@ -11,7 +11,7 @@
 %token<Wktxt_type.def_type * int> DEFLIST
 %token<string> STRING NOWIKI
 %token<char> CHAR
-%token <int * string> LINK
+%token<string> LINK
 %token ITALIC BOLD BOLDITALIC
 %token EOF HRULE EMPTYLINE
 %token TABLE_START TABLE_END TABLE_TITLE TABLE_NEW_LINE
@@ -112,7 +112,7 @@ inline(param):
   | s = STRING { [String s] }
   | c = CHAR { [String (String.make 1 c)] }
   | s = NOWIKI { [NoWiki s] }
-  | x = LINK { [Link (fst x, snd x)] }
+  | x = LINK { [Link x] }
   | p = param { p }
 ;
 
