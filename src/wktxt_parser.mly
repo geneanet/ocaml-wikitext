@@ -27,7 +27,7 @@ document:
 ;
 
 block:
-  | EMPTYLINE* b = block { b }
+  | EMPTYLINE+ b = block { b }
   | h = HEADER i = inline(regular)+ HEADER EMPTYLINE* {
       [ Header (h, (List.flatten i)) ]
     }

@@ -541,6 +541,16 @@ let normalize_1 _ctx =
     ]
     "test '''test : test''' test : test"
 
+let empty _ctx =
+  assert_equal [] ""
+
+let start_with_empty1 _ctx =
+  assert_equal [ Paragraph [ String "test" ] ] "\ntest"
+
+let start_with_empty2 _ctx =
+  assert_equal [ Paragraph [ String "test" ] ] "\n\ntest"
+
+
 let () =
   run_test_tt_main
     ("wktxt" >::: [ "quote_fail1" >:: quote_fail1
@@ -592,4 +602,7 @@ let () =
                   ; "nowiki_1" >:: nowiki_1
                   ; "nowiki_2" >:: nowiki_2
                   ; "normalize_1" >:: normalize_1
+                  ; "empty" >:: empty
+                  ; "start_with_empty1" >:: start_with_empty1
+                  ; "start_with_empty2" >:: start_with_empty2
                   ])
